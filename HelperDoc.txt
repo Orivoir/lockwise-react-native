@@ -1,0 +1,50 @@
+file system community module: <https://www.npmjs.com/package/react-native-fs>
+open link (native module) <https://reactnative.dev/docs/linking#open-links-and-deep-links-universal-links>
+
+AccountCreate {
+    platform: string,
+    login: string,
+    urlLogin: string | null,
+    isFavorite: boolean
+};
+
+Account extends AccountCreate {
+	id: number,
+    createAt: number | Timestamp
+};
+
+/ src
+
+	/ components
+    	/ Screens
+        	- Home.js -> accounts: Account[]
+            - StoreAccounts.js -> accounts: Account[]
+            - AccountDetails.js -> account: Account
+            - AccountEdit.js -> account: Account | null (create action while account is null else is update action)
+            - ModalConfirmDelete.js -> account: Account
+       - AccountList.js -> accounts: Account[], onDetails: (account: Account) => void
+       - AccountItem.js -> account: Account
+       - Appbar.js -> action: "favorite" | "store"
+    / local-api
+    	- accounts.js
+        	<- getById(accountId: number): Account | null; (null while account not exists)
+            <- getWith(matcher: {[string]: any}): Account[];
+            <- getAll(): Account[];
+            <- getFavorites(): Account[];
+            <- update(account: Account): Account | null; (null while account not exists)
+            <- delete(account: Account): Account | null; (null while account not exists)
+            <- deleteById(accountId: number): Account | null; (null while account not exists)
+            <- create(account: AccountCreate): Account | null; (null while field.s invalid)
+            <- toggleFavorite(account: Account): Account | null; (null while account not exists)
+            <- toggleFavoriteById(accountId: number): Account | null; (null while account not exists)
+    / api
+      - accounts.js
+        <- synchronize-account | (http://192.168.1.92:8080/)
+	/ store
+    	/ reducers
+        	- accountsReducers
+            	Account[]
+                	ADD_ACCOUNT -> account: Account
+                    REMOVE_ACCOUNT -> account: Account
+                    UPDATE_ACCOUNT -> account: Account | id is immuable
+                    HYDRATE_ACCOUNTS -> accounts: Account[] | first read from store
