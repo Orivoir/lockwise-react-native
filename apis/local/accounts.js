@@ -24,7 +24,7 @@ function setAccounts(setter) {
     .then(accounts => {
       const newAccounts = setter(accounts);
 
-      RNFS.writeFile(getAbsolutePath(FILENAME_STORAGE), JSON.stringify(newAccounts), "utf-8")
+      RNFS.writeFile(getAbsolutePath(FILENAME_STORAGE), JSON.stringify(newAccounts))
       .then(() => resolve(newAccounts))
       .catch(reject)
     })
@@ -46,8 +46,7 @@ function prepare() {
       if(!isExists) {
         RNFS.appendFile(
           absPathFile,
-          JSON.stringify([]),
-          "utf-8"
+          JSON.stringify([])
         ).then(resolve).catch(reject)
       } else resolve();
     })
@@ -112,18 +111,22 @@ export function getWith(matcher) {
 export function getAll() {
   const absPathFile = getAbsolutePath(FILENAME_STORAGE)
   return new Promise((resolve,reject) => {
-    RNFS.readFile(absPathFile, "utf-8")
-    .then(contentString => {
-      let accounts = null;
-      try {
-        accounts = JSON.parse(contentString);
-        resolve(accounts);
-      } catch(SyntaxError) {
-        // invalid data from storage file
-        // should use syncronized action for remote accounts
-        RNFS.unlink(absPathFile).catch(onError);
-        resolve([]);
-      }
+    prepare()
+    .then(() => {
+      RNFS.readFile(absPathFile)
+      .then(contentString => {
+        let accounts = null;
+        try {
+          accounts = JSON.parse(contentString);
+          resolve(accounts);
+        } catch(SyntaxError) {
+          // invalid data from storage file
+          // should use syncronized action for remote accounts
+          RNFS.unlink(absPathFile).catch(onError);
+          resolve([]);
+        }
+      })
+      .catch(reject);
     })
     .catch(reject);
   });
