@@ -14,16 +14,21 @@ const onError = error => {
 
 /**
  * @description set accounts from file storage from `callback`
+ * @warn not support `async` writing: \
+ *  thread 1: setAccount(currentsAccounts) => newAccount \
+ *                        ^^^^^^^^^^^^^
+ *  thread 2: setAccount(currentsAccounts) => newAccounts \
+ *                       ^^^^^^^^^^^^^^
+ *  threads receveid same `currentsAccounts` because file system have not re writing between two call value last thread erease all previous thread \
+ *  cant use writing multiple with: `Promise.all`
  * @param {(accounts: Account[]) => Account[]} setter - callback setter `argument 1` is the current `accounts` return value is `new accounts`
  * @returns {Promise<Account[]>} resovle with `new accounts` after finish write file
  */
 function setAccounts(setter) {
-
   return new Promise((resolve, reject) => {
     getAll()
     .then(accounts => {
       const newAccounts = setter(accounts);
-
       RNFS.writeFile(getAbsolutePath(FILENAME_STORAGE), JSON.stringify(newAccounts))
       .then(() => resolve(newAccounts))
       .catch(reject)
@@ -52,6 +57,10 @@ function prepare() {
     })
     .catch(reject);
   });
+}
+
+export function clear() {
+  return RNFS.unlink(getAbsolutePath(FILENAME_STORAGE));
 }
 
 /**
@@ -120,6 +129,7 @@ export function getAll() {
           accounts = JSON.parse(contentString);
           resolve(accounts);
         } catch(SyntaxError) {
+          console.error(`invalid data from storage file, storage has been reset`);
           // invalid data from storage file
           // should use syncronized action for remote accounts
           RNFS.unlink(absPathFile).catch(onError);
@@ -232,8 +242,48 @@ export function removeById(accountId) {
   });
 }
 
+export function createMultiple(accounts, originalResolve=null, outputsAccounts=[]) {
+
+  const accountPush = accounts[0];
+  console.log("into create multiple: ", accountPush);
+
+  if(!accountPush) {
+    if(originalResolve instanceof Function) {
+      console.log("original resolve out: ", outputsAccounts);
+      return originalResolve(outputsAccounts);
+    } else {
+      // has call with: accounts.length === 0
+      return Promise.resolve([]);
+    }
+  } else {
+    return new Promise((resolve, reject) => {
+      create(accountPush)
+      .then(accountCreated => {
+        outputsAccounts.push(accountCreated);
+        const newAccounts = accounts.slice(1,);
+
+        if(newAccounts.length >= accounts.length) {
+          throw new Error('createMultiple steps is broke');
+        }
+
+        createMultiple(newAccounts, (originalResolve || resolve), outputsAccounts);
+      })
+      .catch(error => reject({error: error, accountsCreated: outputsAccounts}));
+    });
+  }
+
+}
+
 /**
  * @description append a `new account`
+ * * @warn not support `async` writing: \
+ *  thread 1: setAccount(currentsAccounts) => newAccount \
+ *                        ^^^^^^^^^^^^^
+ *  thread 2: setAccount(currentsAccounts) => newAccounts \
+ *                       ^^^^^^^^^^^^^^
+ *  threads receveid same `currentsAccounts` because file system have not re writing between two call value last thread erease all previous thread \
+ *  cant use writing multiple with: `Promise.all` \
+ *  for multiple add use `createMultiple(accounts: {platform: string, login: string, ?urlLogin: string | null, ?isFavorite: boolean | null}[]): Promise<Account[]>`
  * @param {{platform: string, login: string, ?urlLogin: string | null, ?isFavorite: boolean | null}} account - user fields data account, `id` and `createAt` is auto append
  * @return {Account | null} - `null` while field.s invalid
  */
@@ -242,7 +292,7 @@ export function create(account) {
   return new Promise((resolve,reject) => {
     if(
       typeof account?.platform !== "string" ||
-      typeof login?.platform !== "string"
+      typeof account?.login !== "string"
     ) {
       resolve(null);
     } else {
@@ -253,10 +303,14 @@ export function create(account) {
         account.isFavorite = false;
       }
 
-      setAccounts(currentAccounts => ([
-        ...currentAccounts,
-        account
-      ]))
+      setAccounts(currentAccounts => {
+        account.id = currentAccounts.length;
+        account.createAt = Date.now();
+        return [
+          ...currentAccounts,
+          account
+        ]
+      })
       // @warn can find a another account with same value
       .then(newAccounts => resolve(newAccounts.find(newAccount => (
         // AccountCreate has not id
