@@ -7,15 +7,22 @@ import store from './store/index';
 import App from './App';
 import React from 'react';
 
-const Main = () => {
+import {enableScreens} from 'react-native-screens';
 
+/*! NOT DEPLACE:
+ * should run before mount of first React component
+ * @see: <https://github.com/software-mansion/react-native-screens/tree/master/native-stack>
+ */
+enableScreens();
+
+const Main = () => {
   return (
     <React.StrictMode>
       <ReduxProvider store={store}>
-          <App />
+        <App />
       </ReduxProvider>
     </React.StrictMode>
-  )
+  );
 };
 
 export default Main;
