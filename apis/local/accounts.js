@@ -245,11 +245,8 @@ export function removeById(accountId) {
 export function createMultiple(accounts, originalResolve=null, outputsAccounts=[]) {
 
   const accountPush = accounts[0];
-  console.log("into create multiple: ", accountPush);
-
   if(!accountPush) {
     if(originalResolve instanceof Function) {
-      console.log("original resolve out: ", outputsAccounts);
       return originalResolve(outputsAccounts);
     } else {
       // has call with: accounts.length === 0
