@@ -17,11 +17,9 @@ enableScreens();
 
 const Main = () => {
   return (
-    <React.StrictMode>
-      <ReduxProvider store={store}>
-        <App />
-      </ReduxProvider>
-    </React.StrictMode>
+    <ReduxProvider store={store}>
+      <App />
+    </ReduxProvider>
   );
 };
 
