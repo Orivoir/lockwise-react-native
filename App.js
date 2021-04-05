@@ -1,43 +1,39 @@
 import React from 'react';
+import { connect, useDispatch } from 'react-redux';
 
-import {createNativeStackNavigator} from 'react-native-screens/native-stack';
-import { NavigationContainer } from '@react-navigation/native';
+import {getAll} from './apis/local/accounts';
+import Root from './components/Root';
+import {Text} from 'react-native';
 
-import AccountDetails from './components/Screens/AccountDetails';
-import AccountEdit from './components/Screens/AccountEdit';
-import Home from './components/Screens/Home';
-import ModalConfirmDelete from './components/Screens/ModalConfirmDelete';
-import StoreAccounts from './components/Screens/StoreAccounts';
+const App = ({
+  accounts
+}) => {
 
-const MainStack = createNativeStackNavigator();
-const RootStack = createNativeStackNavigator();
+  const dispatch = useDispatch();
 
-const MainStackRouting = () => {
+  React.useEffect(() => {
+    getAll()
+    .then(accountsStorage => {
+      dispatch({
+        type: "HYDRATE_ACCOUNTS",
+        accounts: accountsStorage
+      });
+    })
+    .catch(error => {
+      console.error(`read accounts error: ${error.message}`);
+      throw new Error('read accounts has crash');
+    })
+  });
+
   return (
-    <MainStack.Navigator initialRouteName="Home">
-      <MainStack.Screen name="Home" component={Home} />
-      <MainStack.Screen name="AccountEdit" component={AccountEdit} />
-      <MainStack.Screen name="StoreAccounts" component={StoreAccounts} />
-      <MainStack.Screen name="AccountDetails" component={AccountDetails} />
-    </MainStack.Navigator>
+    <>
+    {!accounts ? (
+      <Text>Loading...</Text>
+    ): <Root />}
+    </>
   );
-};
+}
 
-const App = () => {
-  return (
-    <NavigationContainer>
-      <RootStack.Navigator
-        mode="modal"
-        screenOptions={{headerShown: false}}>
-        <RootStack.Screen name="Main" component={MainStackRouting} />
-
-        <RootStack.Screen
-          name="ModalConfirmDelete"
-          component={ModalConfirmDelete}
-        />
-      </RootStack.Navigator>
-    </NavigationContainer>
-  );
-};
-
-export default App;
+export default connect(state => ({
+  accounts: state.accounts
+}))(App);
