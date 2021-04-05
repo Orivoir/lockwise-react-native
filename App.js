@@ -1,6 +1,7 @@
 import React from 'react';
 
 import {createNativeStackNavigator} from 'react-native-screens/native-stack';
+import { NavigationContainer } from '@react-navigation/native';
 
 import AccountDetails from './components/Screens/AccountDetails';
 import AccountEdit from './components/Screens/AccountEdit';
@@ -24,14 +25,18 @@ const MainStackRouting = () => {
 
 const App = () => {
   return (
-    <RootStack.Navigator mode="modal">
-      <RootStack.Screen name="Main" component={MainStackRouting} />
+    <NavigationContainer>
+      <RootStack.Navigator
+        mode="modal"
+        screenOptions={{headerShown: false}}>
+        <RootStack.Screen name="Main" component={MainStackRouting} />
 
-      <RootStack.Screen
-        name="ModalConfirmDelete"
-        component={ModalConfirmDelete}
-      />
-    </RootStack.Navigator>
+        <RootStack.Screen
+          name="ModalConfirmDelete"
+          component={ModalConfirmDelete}
+        />
+      </RootStack.Navigator>
+    </NavigationContainer>
   );
 };
 
