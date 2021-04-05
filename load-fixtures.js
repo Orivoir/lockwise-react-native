@@ -3,7 +3,7 @@ const accountsFixtures = require('./fixtures.json');
 
 export default function () {
   return createMultiple(
-    accountsFixtures.slice(0,3).map(accountFixture => ({
+    accountsFixtures.map(accountFixture => ({
       login: accountFixture.login,
       platform: accountFixture.platform,
       loginUrl: accountFixture.loginUrl,
