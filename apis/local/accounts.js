@@ -1,11 +1,9 @@
 import RNFS from 'react-native-fs';
 
 const ROOT_DIR = RNFS.DocumentDirectoryPath;
-const FILENAME_STORAGE = "accounts.json";
+const FILENAME_STORAGE = 'accounts.json';
 
-const getAbsolutePath = filename => (
-  ROOT_DIR + "/" + filename
-);
+const getAbsolutePath = filename => ROOT_DIR + '/' + filename;
 
 const onError = error => {
   console.error(`react-native-fs has crash: ${error.message}`);
@@ -27,13 +25,16 @@ const onError = error => {
 function setAccounts(setter) {
   return new Promise((resolve, reject) => {
     getAll()
-    .then(accounts => {
-      const newAccounts = setter(accounts);
-      RNFS.writeFile(getAbsolutePath(FILENAME_STORAGE), JSON.stringify(newAccounts))
-      .then(() => resolve(newAccounts))
-      .catch(reject)
-    })
-    .catch(reject);
+      .then(accounts => {
+        const newAccounts = setter(accounts);
+        RNFS.writeFile(
+          getAbsolutePath(FILENAME_STORAGE),
+          JSON.stringify(newAccounts),
+        )
+          .then(() => resolve(newAccounts))
+          .catch(reject);
+      })
+      .catch(reject);
   });
 }
 
@@ -47,31 +48,32 @@ function prepare() {
 
   return new Promise((resolve, reject) => {
     RNFS.exists(absPathFile)
-    .then(isExists => {
-      if(!isExists) {
-        RNFS.appendFile(
-          absPathFile,
-          JSON.stringify([])
-        ).then(resolve).catch(reject)
-      } else resolve();
-    })
-    .catch(reject);
+      .then(isExists => {
+        if (!isExists) {
+          RNFS.appendFile(absPathFile, JSON.stringify([]))
+            .then(resolve)
+            .catch(reject);
+        } else {
+          resolve();
+        }
+      })
+      .catch(reject);
   });
 }
 
 export function clear() {
   return new Promise((resolve, reject) => {
-
     RNFS.exists(getAbsolutePath(FILENAME_STORAGE))
-    .then(isExists => {
-
-      if(isExists) {
-        RNFS.unlink(getAbsolutePath(FILENAME_STORAGE)).then(resolve).catch(reject)
-      } else {
-        resolve();
-      }
-    })
-    .catch(reject)
+      .then(isExists => {
+        if (isExists) {
+          RNFS.unlink(getAbsolutePath(FILENAME_STORAGE))
+            .then(resolve)
+            .catch(reject);
+        } else {
+          resolve();
+        }
+      })
+      .catch(reject);
   });
 }
 
@@ -80,95 +82,97 @@ export function clear() {
  * @return {Account|null} - `null` while `account` not exists
  */
 export function getById(accountId) {
-
-  return new Promise((resolve,reject) => {
-
+  return new Promise((resolve, reject) => {
     prepare()
-    .then(() => {
-      getAll()
-      .then(accounts => {
-        const accountFind = accounts.find(account => account.id == accountId) || null;
-        resolve(accountFind);
+      .then(() => {
+        getAll()
+          .then(accounts => {
+            const accountFind =
+              accounts.find(account => account.id == accountId) || null;
+            resolve(accountFind);
+          })
+          .catch(reject);
       })
-      .catch(reject)
-    })
-    .catch(reject);
+      .catch(reject);
   });
 }
 
 /**
  * @param {{[string]: any}} matcher - find `accounts` from `matcher object`
- * @return {Account[]}
+ * @return {Promise<Account[]>}
  */
 export function getWith(matcher) {
+  return new Promise((resolve, reject) => {
+    prepare()
+      .then(() => {
+        getAll()
+          .then(accounts =>
+            resolve(
+              accounts.filter(account => {
+                let isMatche = true;
 
-  prepare()
-  .then(() => {
-    getAll()
-    .then(accounts => (
-      resolve(
-        accounts.filter(account => {
-          let isMatche = true;
+                Object.keys(matcher).forEach(properties => {
+                  if (matcher[properties] !== account[properties]) {
+                    isMatche = false;
+                  }
+                });
 
-          Object.keys(matcher).forEach(properties => {
-            if(matcher[properties] !== account[properties]) {
-              isMatche = false;
-            }
-          });
-
-          return isMatche;
-        })
-      )
-    ))
-    .catch(reject)
-  })
-  .catch(reject);
+                return isMatche;
+              }),
+            ),
+          )
+          .catch(reject);
+      })
+      .catch(reject);
+  });
 }
 
 /**
  * @return {Account[]}
  */
 export function getAll() {
-  const absPathFile = getAbsolutePath(FILENAME_STORAGE)
-  return new Promise((resolve,reject) => {
+  const absPathFile = getAbsolutePath(FILENAME_STORAGE);
+  return new Promise((resolve, reject) => {
     prepare()
-    .then(() => {
-      RNFS.readFile(absPathFile)
-      .then(contentString => {
-        let accounts = null;
-        try {
-          accounts = JSON.parse(contentString);
-          resolve(accounts);
-        } catch(SyntaxError) {
-          console.error(`invalid data from storage file, storage has been reset`);
-          // invalid data from storage file
-          // should use syncronized action for remote accounts
-          RNFS.unlink(absPathFile).catch(onError);
-          resolve([]);
-        }
+      .then(() => {
+        RNFS.readFile(absPathFile)
+          .then(contentString => {
+            let accounts = null;
+            try {
+              accounts = JSON.parse(contentString);
+              resolve(accounts);
+            } catch (SyntaxError) {
+              console.error(
+                'invalid data from storage file, storage has been reset',
+              );
+              // invalid data from storage file
+              // should use syncronized action for remote accounts
+              RNFS.unlink(absPathFile).catch(onError);
+              resolve([]);
+            }
+          })
+          .catch(reject);
       })
       .catch(reject);
-    })
-    .catch(reject);
   });
 }
 
 /**
  * @description all `accounts` with attribute `isFavorite` at `true`
- * @return {Account[]}
+ * @return {Promise<Account[]>}
  */
 export function getFavorites() {
-  prepare()
-  .then(() => {
-    getAll()
-    .then(accounts => (
-      resolve(
-        accounts.filter(account => account.isFavorite)
-      )
-    ))
-    .catch(reject)
-  })
-  .catch(reject);
+  return new Promise((resolve, reject) => {
+    prepare()
+      .then(() => {
+        getAll()
+          .then(accounts =>
+            resolve(accounts.filter(account => account.isFavorite)),
+          )
+          .catch(reject);
+      })
+      .catch(reject);
+  });
 }
 
 /**
@@ -177,27 +181,33 @@ export function getFavorites() {
  * @return {Account|null} - `null` while `account` not exists, else `new account` state
  */
 export function update(account) {
-
   return new Promise((resolve, reject) => {
     prepare()
-    .then(() => {
-      getById(account.id)
-      .then(accountToUpdate => {
-        if(!accountToUpdate) {
-          // account not exists
-          resolve(null);
-        } else {
-          setAccounts(accounts => (
-            accounts.map(currentAccount => (
-              currentAccount.id === account.id ? account: currentAccount
-            ))
-          ))
-          .then(newAccounts => resolve(newAccounts.find(newAccount => newAccount.id === account.id)))
+      .then(() => {
+        getById(account.id)
+          .then(accountToUpdate => {
+            if (!accountToUpdate) {
+              // account not exists
+              resolve(null);
+            } else {
+              setAccounts(accounts =>
+                accounts.map(currentAccount =>
+                  currentAccount.id === account.id ? account : currentAccount,
+                ),
+              )
+                .then(newAccounts =>
+                  resolve(
+                    newAccounts.find(
+                      newAccount => newAccount.id === account.id,
+                    ),
+                  ),
+                )
+                .catch(reject);
+            }
+          })
           .catch(reject);
-        }
-      }).catch(reject);
-    })
-    .catch(reject);
+      })
+      .catch(reject);
   });
 }
 
@@ -207,27 +217,27 @@ export function update(account) {
  * @return {Promise<Account|null>} - `null` while account not exists
  */
 export function remove(account) {
-
   return new Promise((resolve, reject) => {
     prepare()
-    .then(() => {
-      getById(account.id)
-      .then(accountToRemove => {
-        if(!accountToRemove) {
-          // account not exists
-          resolve(null);
-        } else {
-          setAccounts(currentAccounts => (
-            currentAccounts.filter(currentAccount => (
-              currentAccount.id !== accountToRemove.id
-            ))
-          ))
-          .then(() => resolve(accountToRemove))
+      .then(() => {
+        getById(account.id)
+          .then(accountToRemove => {
+            if (!accountToRemove) {
+              // account not exists
+              resolve(null);
+            } else {
+              setAccounts(currentAccounts =>
+                currentAccounts.filter(
+                  currentAccount => currentAccount.id !== accountToRemove.id,
+                ),
+              )
+                .then(() => resolve(accountToRemove))
+                .catch(reject);
+            }
+          })
           .catch(reject);
-        }
-      }).catch(reject);
-    })
-    .catch(reject);
+      })
+      .catch(reject);
   });
 }
 
@@ -239,17 +249,16 @@ export function remove(account) {
 export function removeById(accountId) {
   return new Promise((resolve, reject) => {
     prepare()
-    .then(() => {
-      getById(accountId)
-      .then(account => {
-        if(!account) {
-          resolve(null);
-        } else {
-          remove(account).then(resolve).catch(reject);
-        }
+      .then(() => {
+        getById(accountId).then(account => {
+          if (!account) {
+            resolve(null);
+          } else {
+            remove(account).then(resolve).catch(reject);
+          }
+        });
       })
-    })
-    .catch(reject);
+      .catch(reject);
   });
 }
 
@@ -260,11 +269,14 @@ export function removeById(accountId) {
  * @param {Account[]} outputsAccounts - you should give always `null` this params is use for persist `accounts` create during recursive call into body function
  * @returns {Promise<Account[]>} - accounts created
  */
-export function createMultiple(accounts, originalResolve=null, outputsAccounts=[]) {
-
+export function createMultiple(
+  accounts,
+  originalResolve = null,
+  outputsAccounts = [],
+) {
   const accountPush = accounts[0];
-  if(!accountPush) {
-    if(originalResolve instanceof Function) {
+  if (!accountPush) {
+    if (originalResolve instanceof Function) {
       return originalResolve(outputsAccounts);
     } else {
       // has call with: accounts.length === 0
@@ -273,20 +285,25 @@ export function createMultiple(accounts, originalResolve=null, outputsAccounts=[
   } else {
     return new Promise((resolve, reject) => {
       create(accountPush)
-      .then(accountCreated => {
-        outputsAccounts.push(accountCreated);
-        const newAccounts = accounts.slice(1,);
+        .then(accountCreated => {
+          outputsAccounts.push(accountCreated);
+          const newAccounts = accounts.slice(1);
 
-        if(newAccounts.length >= accounts.length) {
-          throw new Error('createMultiple steps is broke');
-        }
+          if (newAccounts.length >= accounts.length) {
+            throw new Error('createMultiple steps is broke');
+          }
 
-        createMultiple(newAccounts, (originalResolve || resolve), outputsAccounts);
-      })
-      .catch(error => reject({error: error, accountsCreated: outputsAccounts}));
+          createMultiple(
+            newAccounts,
+            originalResolve || resolve,
+            outputsAccounts,
+          );
+        })
+        .catch(error =>
+          reject({error: error, accountsCreated: outputsAccounts}),
+        );
     });
   }
-
 }
 
 /**
@@ -303,38 +320,39 @@ export function createMultiple(accounts, originalResolve=null, outputsAccounts=[
  * @return {Promise<Account | null>} - `null` while field.s invalid
  */
 export function create(account) {
-
-  return new Promise((resolve,reject) => {
-    if(
-      typeof account?.platform !== "string" ||
-      typeof account?.login !== "string"
+  return new Promise((resolve, reject) => {
+    if (
+      typeof account?.platform !== 'string' ||
+      typeof account?.login !== 'string'
     ) {
       resolve(null);
     } else {
-      if(typeof account.urlLogin !== "string") {
+      if (typeof account.urlLogin !== 'string') {
         account.urlLogin = null;
       }
-      if(typeof account.isFavorite !== "boolean") {
+      if (typeof account.isFavorite !== 'boolean') {
         account.isFavorite = false;
       }
 
       setAccounts(currentAccounts => {
         account.id = currentAccounts.length;
         account.createAt = Date.now();
-        return [
-          ...currentAccounts,
-          account
-        ]
+        return [...currentAccounts, account];
       })
-      // @warn can find a another account with same value
-      .then(newAccounts => resolve(newAccounts.find(newAccount => (
-        // AccountCreate has not id
-        newAccount.platform === account.platform &&
-        newAccount.login === account.login &&
-        newAccount.isFavorite === account.isFavorite &&
-        newAccount.urlLogin === account.urlLogin
-      ))))
-      .catch(reject)
+        // @warn can find a another account with same value
+        .then(newAccounts =>
+          resolve(
+            newAccounts.find(
+              newAccount =>
+                // AccountCreate has not id
+                newAccount.platform === account.platform &&
+                newAccount.login === account.login &&
+                newAccount.isFavorite === account.isFavorite &&
+                newAccount.urlLogin === account.urlLogin,
+            ),
+          ),
+        )
+        .catch(reject);
     }
   });
 }
@@ -347,12 +365,11 @@ export function create(account) {
 export function toggleFavorite(account) {
   return new Promise((resolve, reject) => {
     prepare()
-    .then(() => {
-      toggleFavoriteById(account.id)
-      .then(resolve).catch(reject);
-    })
-    .catch(reject);
-  })
+      .then(() => {
+        toggleFavoriteById(account.id).then(resolve).catch(reject);
+      })
+      .catch(reject);
+  });
 }
 
 /**
@@ -363,25 +380,30 @@ export function toggleFavorite(account) {
 export function toggleFavoriteById(accountId) {
   return new Promise((resolve, reject) => {
     prepare()
-    .then(() => {
-      getById(accountId)
-      .then(account => {
-        if(!account) {
-          resolve(null);
-        } else {
-          setAccounts(currentAccounts => (
-            currentAccounts.map(currentAccount => (
-              currentAccount.id === account.id ? {
-                ...currentAccount,
-                isFavorite: !currentAccount.isFavorite
-              }: currentAccount
-            ))
-          ))
-          .then(newAccounts => resolve(newAccounts.find(newAccount => newAccount.id === account.id)))
-          .catch(reject);
-        }
+      .then(() => {
+        getById(accountId).then(account => {
+          if (!account) {
+            resolve(null);
+          } else {
+            setAccounts(currentAccounts =>
+              currentAccounts.map(currentAccount =>
+                currentAccount.id === account.id
+                  ? {
+                      ...currentAccount,
+                      isFavorite: !currentAccount.isFavorite,
+                    }
+                  : currentAccount,
+              ),
+            )
+              .then(newAccounts =>
+                resolve(
+                  newAccounts.find(newAccount => newAccount.id === account.id),
+                ),
+              )
+              .catch(reject);
+          }
+        });
       })
-    })
-    .catch(reject);
+      .catch(reject);
   });
 }
