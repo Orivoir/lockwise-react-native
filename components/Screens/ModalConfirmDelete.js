@@ -1,5 +1,7 @@
 import React from 'react';
-import {View, Text, Button} from 'react-native';
+import { useTheme } from 'react-native-paper';
+import {View} from 'react-native';
+import {Card, Button, HelperText} from 'react-native-paper';
 import {useDispatch} from 'react-redux';
 
 import {remove} from './../../apis/local/accounts';
@@ -46,18 +48,39 @@ const ModalConfirmDelete = ({route, navigation}) => {
       });
   };
 
-  return (
-    <View>
-      <View>
-        <Text>Confirm delete action</Text>
-        <Text>Do you really want delete account {account.platform} ?</Text>
-        <Text>This action cant be reverse.</Text>
-      </View>
+  const {colors} = useTheme();
 
-      <View>
-        <Button title="cancel" onPress={onCancel} />
-        <Button title="delete" onPress={onDelete} />
-      </View>
+  return (
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: colors.background,
+        justifyContent: "center",
+        paddingHorizontal: 16
+      }}
+    >
+      <Card>
+        <Card.Title
+          title="Confirm delete action"
+          subtitle={`Do you really want delete account ${account.platform} ?`}
+        />
+
+        <Card.Content>
+          <HelperText type="error" visible={true}>
+            *This action cant be reverse
+          </HelperText>
+        </Card.Content>
+
+        <Card.Actions
+          style={{
+            justifyContent: "space-between"
+          }}
+        >
+          <Button onPress={onCancel} labelStyle={{fontSize: 18}}>cancel</Button>
+          <Button onPress={onDelete} labelStyle={{fontSize: 16, color: colors.error}}>delete</Button>
+        </Card.Actions>
+
+      </Card>
     </View>
   );
 };
