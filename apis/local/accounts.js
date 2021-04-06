@@ -60,7 +60,19 @@ function prepare() {
 }
 
 export function clear() {
-  return RNFS.unlink(getAbsolutePath(FILENAME_STORAGE));
+  return new Promise((resolve, reject) => {
+
+    RNFS.exists(getAbsolutePath(FILENAME_STORAGE))
+    .then(isExists => {
+
+      if(isExists) {
+        RNFS.unlink(getAbsolutePath(FILENAME_STORAGE)).then(resolve).catch(reject)
+      } else {
+        resolve();
+      }
+    })
+    .catch(reject)
+  });
 }
 
 /**

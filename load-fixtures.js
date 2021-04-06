@@ -1,4 +1,4 @@
-import {getAll, createMultiple, remove} from './apis/local/accounts';
+import {createMultiple} from './apis/local/accounts';
 const accountsFixtures = require('./fixtures.json');
 
 export default function () {
@@ -7,6 +7,7 @@ export default function () {
       login: accountFixture.login,
       platform: accountFixture.platform,
       loginUrl: accountFixture.loginUrl,
+      password: accountFixture.password,
       isFavorite: accountFixture.isFavorite,
     }))
   );
