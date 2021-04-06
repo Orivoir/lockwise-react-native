@@ -1,6 +1,7 @@
 import React from 'react';
 import AccountList from '../AccountList';
 import {connect} from 'react-redux';
+import FabCreate from '../FabCreate';
 
 const Home = ({navigation, accounts}) => {
 
@@ -16,13 +17,20 @@ const Home = ({navigation, accounts}) => {
     });
   };
 
+  const onCreateAccount = () => {
+    navigation.navigate('AccountEdit', {});
+  };
+
   return (
-    // Home screen show only favorite account
+    <>
+    {/* Home screen show only favorite account */}
     <AccountList
       accounts={accounts.filter(account => account.isFavorite)}
       onDelete={onDelete}
       onUpdate={onUpdate}
     />
+    <FabCreate onCreate={onCreateAccount} />
+    </>
   );
 };
 
