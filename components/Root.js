@@ -9,16 +9,26 @@ import Home from './Screens/Home';
 import ModalConfirmDelete from './Screens/ModalConfirmDelete';
 import StoreAccounts from './Screens/StoreAccounts';
 import HeaderRight from './HeaderRight';
+import { useTheme } from 'react-native-paper';
 
 const MainStack = createNativeStackNavigator();
 const RootStack = createNativeStackNavigator();
 
 const MainStackRouting = () => {
+
+  const {colors} = useTheme();
+
   return (
     <MainStack.Navigator
       initialRouteName="Home"
       screenOptions={{
-        headerRight: HeaderRight
+        headerRight: HeaderRight,
+        headerStyle: {
+          backgroundColor: colors.background
+        },
+        headerTitleStyle: {
+          color: colors.text
+        }
       }}>
       <MainStack.Screen name="Home" component={Home} />
       <MainStack.Screen name="AccountEdit" component={AccountEdit} />
