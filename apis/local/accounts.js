@@ -86,11 +86,10 @@ export function getById(accountId) {
     prepare()
     .then(() => {
       getAll()
-      .then(accounts => (
-        resolve(
-          accounts.find(account => account.id === accountId) || null
-        )
-      ))
+      .then(accounts => {
+        const accountFind = accounts.find(account => account.id == accountId) || null;
+        resolve(accountFind);
+      })
       .catch(reject)
     })
     .catch(reject);
@@ -205,7 +204,7 @@ export function update(account) {
 /**
  * @description **warn:** remove action cant reserve, not copy save or factory remove as `isRemove: true`
  * @param {Account} account - account target remove action
- * @return {Account|null} - `null` while account not exists
+ * @return {Promise<Account|null>} - `null` while account not exists
  */
 export function remove(account) {
 
@@ -213,17 +212,17 @@ export function remove(account) {
     prepare()
     .then(() => {
       getById(account.id)
-      .then(accountToUpdate => {
-        if(!accountToUpdate) {
+      .then(accountToRemove => {
+        if(!accountToRemove) {
           // account not exists
           resolve(null);
         } else {
-          setAccounts(accounts => (
-            accounts.filter(currentAccount => (
-              currentAccount.id !== account.id
+          setAccounts(currentAccounts => (
+            currentAccounts.filter(currentAccount => (
+              currentAccount.id !== accountToRemove.id
             ))
           ))
-          .then(newAccounts => resolve(newAccounts.find(newAccount => newAccount.id === account.id)))
+          .then(() => resolve(accountToRemove))
           .catch(reject);
         }
       }).catch(reject);
@@ -235,7 +234,7 @@ export function remove(account) {
 /**
  * @description **warn:** remove action cant reserve, not copy save or factory remove as `isRemove: true`
  * @param {number} accountId - account id target remove action
- * @return {Account|null} - `null` while account not exists
+ * @return {Promise<Account|null>} - `null` while account not exists
  */
 export function removeById(accountId) {
   return new Promise((resolve, reject) => {
@@ -254,6 +253,13 @@ export function removeById(accountId) {
   });
 }
 
+/**
+ *
+ * @param {{platform: string, login: string, ?urlLogin: string | null, ?isFavorite: boolean | null}[]} accounts - accounts to appends
+ * @param {(Account[]) => void} originalResolve - you should give always `null` this params is use for remote original `resolve` function during recursive call into body function
+ * @param {Account[]} outputsAccounts - you should give always `null` this params is use for persist `accounts` create during recursive call into body function
+ * @returns {Promise<Account[]>} - accounts created
+ */
 export function createMultiple(accounts, originalResolve=null, outputsAccounts=[]) {
 
   const accountPush = accounts[0];
@@ -294,7 +300,7 @@ export function createMultiple(accounts, originalResolve=null, outputsAccounts=[
  *  cant use writing multiple with: `Promise.all` \
  *  for multiple add use `createMultiple(accounts: {platform: string, login: string, ?urlLogin: string | null, ?isFavorite: boolean | null}[]): Promise<Account[]>`
  * @param {{platform: string, login: string, ?urlLogin: string | null, ?isFavorite: boolean | null}} account - user fields data account, `id` and `createAt` is auto append
- * @return {Account | null} - `null` while field.s invalid
+ * @return {Promise<Account | null>} - `null` while field.s invalid
  */
 export function create(account) {
 
@@ -336,7 +342,7 @@ export function create(account) {
 /**
  * @description set `boolean` value of attribute `isFavorite`
  * @param {Account} account - account target of set favorite
- * @return {Account|null} - null while account not exists
+ * @return {Promise<Account|null>} - `null` while account not exists
  */
 export function toggleFavorite(account) {
   return new Promise((resolve, reject) => {
@@ -352,7 +358,7 @@ export function toggleFavorite(account) {
 /**
  * @description set `boolean` value of attribute `isFavorite`
  * @param {number} accountId - account id target of set favorite
- * @return {Account|null}
+ * @return {Promise<Account|null>} - `null` while account not exists
  */
 export function toggleFavoriteById(accountId) {
   return new Promise((resolve, reject) => {
