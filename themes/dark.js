@@ -7,6 +7,7 @@ const overridesProperties = {
     primary: '#1abc9c',
     accent: '#f39c12',
   },
+  roundness: 0
 };
 
 export default {
