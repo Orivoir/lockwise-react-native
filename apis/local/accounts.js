@@ -335,7 +335,18 @@ export function create(account) {
       }
 
       setAccounts(currentAccounts => {
-        account.id = currentAccounts.length;
+
+        // cant use length of current accounts for generate id
+        // because if a account middle position has been removed
+        // cant generate double same id for next create e.g:
+        // > id: [0,1,2,3]
+        // > remove 1
+        // > id: [0,2,3]
+        // > append new account account.id = accounts.length (3)
+        // > id: [0,2,3,3] <- Went wrong error id should be uniq
+        // account.id = currentAccounts.length;
+        account.id = `${Date.now().toString()}${Math.random().toString().replace('.','-')}`;
+
         account.createAt = Date.now();
         return [...currentAccounts, account];
       })
