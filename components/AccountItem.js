@@ -2,9 +2,6 @@ import React from 'react';
 import {
   // prototype view component
   View,
-  Text,
-  Button,
-  Switch,
 
   // open link component
   Linking
@@ -13,6 +10,8 @@ import {
 import Clipboard from '@react-native-clipboard/clipboard';
 import { useDispatch } from 'react-redux';
 import {toggleFavorite} from './../apis/local/accounts';
+import AccountMenuItem from './AccountMenuItem';
+import {Switch, Card, Text, Divider} from 'react-native-paper';
 
 /*
 AccountCreate {
@@ -103,22 +102,26 @@ const AccountItem = ({
   };
 
   return (
-    <View>
-      <Text>{account.platform}</Text>
-      <Text>{account.login}</Text>
+    <Card>
+      <Card.Title title={account.platform} subtitle={account.login} />
 
-      <View>
-        <Switch value={localIsFavorite} onValueChange={onToggleFavorite}  />
-        <Button title="copy password" onPress={onCopyPassword} />
+      <Card.Actions style={{justifyContent: "space-between"}}>
+        <View style={{flexDirection: "row", alignItems: "center"}}>
+          <Text>{localIsFavorite ? "remove": "add"} favorite</Text>
+          <Switch value={localIsFavorite} onValueChange={onToggleFavorite}  />
+        </View>
 
-        {!!account.loginUrl && (
-          <Button title="open link" onPress={onOpenLink} />
-        )}
+        <AccountMenuItem
+          account={account}
+          onOpenLink={onOpenLink}
+          onCopyPassword={onCopyPassword}
+          onUpdate={onLocalUpdate}
+          onDelete={onLocalDelete}
+        />
+      </Card.Actions>
 
-        <Button title="update" onPress={onLocalUpdate} />
-        <Button title="delete" onPress={onLocalDelete} />
-      </View>
-    </View>
+      <Divider />
+    </Card>
   );
 }
 
