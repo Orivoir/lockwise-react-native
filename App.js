@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect, useDispatch } from 'react-redux';
 
-import {getAll, clear} from './apis/local/accounts';
+import {clear, getAll} from './apis/local/accounts';
 import Root from './components/Root';
 import {Text} from 'react-native';
 
@@ -24,7 +24,7 @@ const App = ({
 
     clear()
     .then(() => {
-      console.log("storage clear\nstart load fixtures:");
+      console.info("storage clear, start load fixtures:");
 
       loadFixtures()
       .then(accountsLoad => {
@@ -44,6 +44,10 @@ const App = ({
         throw new Error('loads account fixtures has fail');
       });
 
+    })
+    .catch(error => {
+      console.error(`clear storage has fail with: ${error.message}`);
+      throw new Error(`cant clear storage`);
     });
 
   });
