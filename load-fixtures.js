@@ -9,7 +9,6 @@ export default function () {
       loginUrl: accountFixture.loginUrl,
       password: accountFixture.password,
       isFavorite: accountFixture.isFavorite,
-    }))
+    })),
   );
-
 }

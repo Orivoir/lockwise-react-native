@@ -4,16 +4,15 @@ import {connect} from 'react-redux';
 import FabCreate from '../FabCreate';
 
 const StoreAccounts = ({navigation, accounts}) => {
-
   const onDelete = account => {
     navigation.navigate('ModalConfirmDelete', {
-      account
+      account,
     });
   };
 
   const onUpdate = account => {
     navigation.navigate('AccountEdit', {
-      account
+      account,
     });
   };
 
@@ -35,5 +34,5 @@ const StoreAccounts = ({navigation, accounts}) => {
 };
 
 export default connect(state => ({
-  accounts: state.accounts
+  accounts: state.accounts,
 }))(StoreAccounts);

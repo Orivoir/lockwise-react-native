@@ -6,23 +6,17 @@ const AccountMenuItem = ({
   onOpenLink,
   onCopyPassword,
   onUpdate,
-  onDelete
+  onDelete,
 }) => {
-
   const [isOpen, setIsOpen] = React.useState(false);
 
   const openMenuRenderer = React.useRef(
-    <Button
-      mode="text"
-      onPress={() => setIsOpen(true)}
-    >
+    <Button mode="text" onPress={() => setIsOpen(true)}>
       open menu
-    </Button>
+    </Button>,
   ).current;
 
-  const onClose = () => (
-    setIsOpen(false)
-  );
+  const onClose = () => setIsOpen(false);
 
   const onLocalUpdate = () => {
     onClose();
@@ -31,7 +25,7 @@ const AccountMenuItem = ({
 
   const onLocalDelete = () => {
     onClose();
-    onDelete()
+    onDelete();
   };
 
   const onLocalCopyPassword = () => {
@@ -47,11 +41,7 @@ const AccountMenuItem = ({
   const {colors} = useTheme();
 
   return (
-    <Menu
-      visible={isOpen}
-      onDismiss={onClose}
-      anchor={openMenuRenderer}
-    >
+    <Menu visible={isOpen} onDismiss={onClose} anchor={openMenuRenderer}>
       <Menu.Item
         title="copy password"
         titleStyle={styles.item}
@@ -78,19 +68,19 @@ const AccountMenuItem = ({
         title="delete"
         titleStyle={{
           color: colors.error,
-          ...styles.item
+          ...styles.item,
         }}
         onPress={onLocalDelete}
         icon="delete"
       />
     </Menu>
   );
-}
+};
 
 export default AccountMenuItem;
 
 const styles = {
   item: {
-    fontSize: 20
-  }
+    fontSize: 20,
+  },
 };

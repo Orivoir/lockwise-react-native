@@ -5,7 +5,7 @@ import themeReducers from './themeReducers';
 
 const rootReducers = combineReducers({
   accounts: accountsReducers,
-  theme: themeReducers
+  theme: themeReducers,
 });
 
 export default rootReducers;

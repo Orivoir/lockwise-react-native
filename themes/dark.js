@@ -4,12 +4,12 @@ import {DarkTheme} from 'react-native-paper';
 const overridesProperties = {
   colors: {
     ...DarkTheme.colors,
-    primary: "#1abc9c",
-    accent: "#f39c12"
-  }
+    primary: '#1abc9c',
+    accent: '#f39c12',
+  },
 };
 
 export default {
   ...DarkTheme,
-  ...overridesProperties
+  ...overridesProperties,
 };

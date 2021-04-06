@@ -1,6 +1,4 @@
-import {
-  ACCOUNTS_REDUCERS_INITIAL_STATE
-} from './../../constants';
+import {ACCOUNTS_REDUCERS_INITIAL_STATE} from './../../constants';
 
 /*
 AccountCreate {
@@ -26,33 +24,30 @@ Account extends AccountCreate {
  * @param {{type: string, ?account: Account, ?accounts: Account[]}} action
  * @returns {Account[]} always the new state
  */
-export default function accountsReducers(state=ACCOUNTS_REDUCERS_INITIAL_STATE, action) {
-
+export default function accountsReducers(
+  state = ACCOUNTS_REDUCERS_INITIAL_STATE,
+  action,
+) {
   switch (action.type) {
-    case "ADD_ACCOUNT":
-      if(typeof action.account === "object") {
-        return [
-          ...state,
-          action.account
-        ];
+    case 'ADD_ACCOUNT':
+      if (typeof action.account === 'object') {
+        return [...state, action.account];
       }
       return state;
-    case "REMOVE_ACCOUNT":
-      if(typeof action.account === "object") {
-        return state.filter(account => (
-          account.id !== action.account.id
-        ));
+    case 'REMOVE_ACCOUNT':
+      if (typeof action.account === 'object') {
+        return state.filter(account => account.id !== action.account.id);
       }
       return state;
-    case "UPDATE_ACCOUNT":
-      if(typeof action.account === "object") {
-        return state.map(account => (
-          account.id === action.account.id ? action.account: account
-        ));
+    case 'UPDATE_ACCOUNT':
+      if (typeof action.account === 'object') {
+        return state.map(account =>
+          account.id === action.account.id ? action.account : account,
+        );
       }
       return state;
-    case "HYDRATE_ACCOUNTS":
-      if(action.accounts instanceof Array) {
+    case 'HYDRATE_ACCOUNTS':
+      if (action.accounts instanceof Array) {
         return action.accounts;
       }
       return state;
@@ -60,5 +55,4 @@ export default function accountsReducers(state=ACCOUNTS_REDUCERS_INITIAL_STATE, 
     default:
       return state;
   }
-
 }

@@ -4,12 +4,12 @@ import {DefaultTheme} from 'react-native-paper';
 const overridesProperties = {
   colors: {
     ...DefaultTheme.colors,
-    error: "#e74c3c",
-    primary: "#d80073"
-  }
+    error: '#e74c3c',
+    primary: '#d80073',
+  },
 };
 
 export default {
   ...DefaultTheme,
-  ...overridesProperties
+  ...overridesProperties,
 };

@@ -1,11 +1,10 @@
-import { useNavigation } from '@react-navigation/core';
+import {useNavigation} from '@react-navigation/core';
 import React from 'react';
 import {View} from 'react-native';
 import {IconButton, useTheme} from 'react-native-paper';
-import { useDispatch } from 'react-redux';
+import {useDispatch} from 'react-redux';
 
 const HeaderRight = () => {
-
   const navigation = useNavigation();
 
   const onShowAllAccounts = () => {
@@ -16,7 +15,7 @@ const HeaderRight = () => {
 
   const onToggleTheme = () => {
     dispatch({
-      type: "TOGGLE_THEME"
+      type: 'TOGGLE_THEME',
     });
   };
 
@@ -25,9 +24,8 @@ const HeaderRight = () => {
   return (
     <View
       style={{
-        flexDirection: "row"
-      }}
-    >
+        flexDirection: 'row',
+      }}>
       <IconButton
         icon="archive"
         size={32}
@@ -42,6 +40,6 @@ const HeaderRight = () => {
       />
     </View>
   );
-}
+};
 
 export default HeaderRight;

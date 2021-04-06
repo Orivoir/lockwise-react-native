@@ -4,16 +4,15 @@ import {connect} from 'react-redux';
 import FabCreate from '../FabCreate';
 
 const Home = ({navigation, accounts}) => {
-
   const onDelete = account => {
     navigation.navigate('ModalConfirmDelete', {
-      account
+      account,
     });
   };
 
   const onUpdate = account => {
     navigation.navigate('AccountEdit', {
-      account
+      account,
     });
   };
 
@@ -23,17 +22,17 @@ const Home = ({navigation, accounts}) => {
 
   return (
     <>
-    {/* Home screen show only favorite account */}
-    <AccountList
-      accounts={accounts.filter(account => account.isFavorite)}
-      onDelete={onDelete}
-      onUpdate={onUpdate}
-    />
-    <FabCreate onCreate={onCreateAccount} />
+      {/* Home screen show only favorite account */}
+      <AccountList
+        accounts={accounts.filter(account => account.isFavorite)}
+        onDelete={onDelete}
+        onUpdate={onUpdate}
+      />
+      <FabCreate onCreate={onCreateAccount} />
     </>
   );
 };
 
 export default connect(state => ({
-  accounts: state.accounts
+  accounts: state.accounts,
 }))(Home);
