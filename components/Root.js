@@ -8,13 +8,18 @@ import AccountEdit from './Screens/AccountEdit';
 import Home from './Screens/Home';
 import ModalConfirmDelete from './Screens/ModalConfirmDelete';
 import StoreAccounts from './Screens/StoreAccounts';
+import HeaderRight from './HeaderRight';
 
 const MainStack = createNativeStackNavigator();
 const RootStack = createNativeStackNavigator();
 
 const MainStackRouting = () => {
   return (
-    <MainStack.Navigator initialRouteName="Home">
+    <MainStack.Navigator
+      initialRouteName="Home"
+      screenOptions={{
+        headerRight: HeaderRight
+      }}>
       <MainStack.Screen name="Home" component={Home} />
       <MainStack.Screen name="AccountEdit" component={AccountEdit} />
       <MainStack.Screen name="StoreAccounts" component={StoreAccounts} />
