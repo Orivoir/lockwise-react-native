@@ -1,6 +1,8 @@
 import { useNavigation } from '@react-navigation/core';
 import React from 'react';
-import {View, Button} from 'react-native';
+import {View} from 'react-native';
+import {IconButton, useTheme} from 'react-native-paper';
+import { useDispatch } from 'react-redux';
 
 const HeaderRight = () => {
 
@@ -10,9 +12,34 @@ const HeaderRight = () => {
     navigation.navigate('StoreAccounts');
   };
 
+  const dispatch = useDispatch();
+
+  const onToggleTheme = () => {
+    dispatch({
+      type: "TOGGLE_THEME"
+    });
+  };
+
+  const {colors} = useTheme();
+
   return (
-    <View>
-      <Button title="All accounts" onPress={onShowAllAccounts} />
+    <View
+      style={{
+        flexDirection: "row"
+      }}
+    >
+      <IconButton
+        icon="archive"
+        size={32}
+        onPress={onShowAllAccounts}
+        color={colors.primary}
+      />
+      <IconButton
+        icon="theme-light-dark"
+        size={32}
+        onPress={onToggleTheme}
+        color={colors.primary}
+      />
     </View>
   );
 }
