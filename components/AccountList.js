@@ -1,5 +1,7 @@
 import React from 'react';
-import { ScrollView } from 'react-native';
+import { FlatList, Text } from 'react-native';
+import { useTheme } from 'react-native-paper';
+import useWindowDimensions from 'react-native/Libraries/Utilities/useWindowDimensions';
 import AccountItem from './AccountItem';
 
 const AccountList = ({
@@ -7,17 +9,32 @@ const AccountList = ({
   onDelete,
   onUpdate
 }) => {
+
+  const {colors} = useTheme();
+
   return (
-    <ScrollView>
-      {accounts.map(account => (
+    <>
+    <FlatList
+      style={{
+        padding: 4,
+        backgroundColor: colors.background
+      }}
+      data={accounts}
+      renderItem={({item}) => (
         <AccountItem
-          account={account}
-          key={account.id}
+          account={item}
+          key={item.id}
           onDelete={onDelete}
           onUpdate={onUpdate}
         />
-      ))}
-    </ScrollView>
+      )}
+      keyExtractor={account => account.id}
+    />
+
+    {accounts.length === 0 && (
+      <Text>this accounts list is currently empty</Text>
+    )}
+    </>
   );
 }
 
