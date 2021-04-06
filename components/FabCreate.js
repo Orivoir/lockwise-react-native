@@ -9,11 +9,11 @@ const FabCreate = ({onCreate}) => {
   const isLandscape = width >= height;
 
   const stylesPosition = !isLandscape ? {
-    left: 8,
-    bottom: 8
+    right: 8,
+    bottom: 48
   }: {
     right: 8,
-    top: 8
+    top: 16
   };
 
   return (
