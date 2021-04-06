@@ -1,5 +1,5 @@
 import React from 'react';
-import {Menu, Button, useTheme} from 'react-native-paper';
+import {Menu, IconButton, useTheme} from 'react-native-paper';
 
 const AccountMenuItem = ({
   account,
@@ -11,9 +11,7 @@ const AccountMenuItem = ({
   const [isOpen, setIsOpen] = React.useState(false);
 
   const openMenuRenderer = React.useRef(
-    <Button mode="text" onPress={() => setIsOpen(true)}>
-      open menu
-    </Button>,
+    <IconButton icon="dots-horizontal" size={32} onPress={() => setIsOpen(true)} />
   ).current;
 
   const onClose = () => setIsOpen(false);
