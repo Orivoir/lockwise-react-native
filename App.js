@@ -22,32 +22,49 @@ const App = ({
       return;
     }
 
-    clear()
-    .then(() => {
-      console.info("storage clear, start load fixtures:");
+    getAll()
+    .then(checkAccountsStorage => {
+      console.log("currently:", checkAccountsStorage.length, " accounts fixtures");
+      if(checkAccountsStorage.length <= 3) {
+        clear()
+        .then(() => {
+          console.info("storage clear, start load fixtures:");
 
-      loadFixtures()
-      .then(accountsLoad => {
-        console.log("append: ",  accountsLoad.length, " accounts fixtures");
+          loadFixtures()
+          .then(accountsLoad => {
+            console.log("append: ",  accountsLoad.length, " accounts fixtures");
+            dispatch({
+              type: "HYDRATE_ACCOUNTS",
+              accounts: accountsLoad
+            });
+
+            getAll()
+            .then(accountsStorage => {
+              console.log("total accounts storage: ", accountsStorage.length);
+            });
+          })
+          .catch(error => {
+            console.error(`load accounts fixture has fail with: ${error.message}`);
+            throw new Error('loads account fixtures has fail');
+          });
+
+        })
+        .catch(error => {
+          console.error(`clear storage has fail with: ${error.message}`);
+          throw new Error(`cant clear storage`);
+        });
+      } else {
+        console.log('not regenerate accounts fixtures');
         dispatch({
           type: "HYDRATE_ACCOUNTS",
-          accounts: accountsLoad
+          accounts: checkAccountsStorage
         });
-
-        getAll()
-        .then(accountsStorage => {
-          console.log("total accounts storage: ", accountsStorage.length);
-        });
-      })
-      .catch(error => {
-        console.error(`load accounts fixture has fail with: ${error.message}`);
-        throw new Error('loads account fixtures has fail');
-      });
+      }
 
     })
     .catch(error => {
-      console.error(`clear storage has fail with: ${error.message}`);
-      throw new Error(`cant clear storage`);
+      console.error(`load accounts fixture has fail with: ${error.message}`);
+      throw new Error('loads account fixtures has fail');
     });
 
   });
