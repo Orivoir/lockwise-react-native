@@ -5,7 +5,8 @@ import AccountItem from './AccountItem';
 const AccountList = ({
   accounts,
   onDelete,
-  onUpdate
+  onUpdate,
+  onToggleFavorite
 }) => {
   return (
     <ScrollView>

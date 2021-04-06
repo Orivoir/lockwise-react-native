@@ -371,7 +371,7 @@ export function toggleFavoriteById(accountId) {
         } else {
           setAccounts(currentAccounts => (
             currentAccounts.map(currentAccount => (
-              currentAccount.id === acccount.id ? {
+              currentAccount.id === account.id ? {
                 ...currentAccount,
                 isFavorite: !currentAccount.isFavorite
               }: currentAccount
