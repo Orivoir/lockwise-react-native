@@ -3,7 +3,6 @@ import React from 'react';
 import {createNativeStackNavigator} from 'react-native-screens/native-stack';
 import {NavigationContainer} from '@react-navigation/native';
 
-import AccountDetails from './Screens/AccountDetails';
 import AccountEdit from './Screens/AccountEdit';
 import Home from './Screens/Home';
 import ModalConfirmDelete from './Screens/ModalConfirmDelete';
@@ -29,10 +28,9 @@ const MainStackRouting = () => {
           color: colors.text,
         },
       }}>
-      <MainStack.Screen name="Home" component={Home} />
-      <MainStack.Screen name="AccountEdit" component={AccountEdit} />
-      <MainStack.Screen name="StoreAccounts" component={StoreAccounts} />
-      <MainStack.Screen name="AccountDetails" component={AccountDetails} />
+      <MainStack.Screen name="Home" options={{headerTitle: "Favorites"}} component={Home} />
+      <MainStack.Screen name="AccountEdit" options={{headerTitle: "Edit"}} component={AccountEdit} />
+      <MainStack.Screen name="StoreAccounts" options={{headerTitle: "Accounts"}} component={StoreAccounts} />
     </MainStack.Navigator>
   );
 };
