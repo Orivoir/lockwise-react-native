@@ -3,8 +3,18 @@ import AccountList from '../AccountList';
 import {connect} from 'react-redux';
 
 const Home = ({navigation, accounts}) => {
+
+  const onDelete = account => {
+    navigation.navigate('ModalConfirmDelete', {
+      account
+    });
+  };
+
   return (
-    <AccountList accounts={accounts} />
+    <AccountList
+      accounts={accounts}
+      onDelete={onDelete}
+    />
   );
 };
 

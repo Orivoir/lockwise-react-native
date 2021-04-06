@@ -23,11 +23,18 @@ Account extends AccountCreate {
 };
 */
 
-const AccountItem = ({account}) => {
+const AccountItem = ({
+  account,
+  onDelete
+}) => {
 
   const onCopyPassword = () => {
     console.info("run copy password for:", account.password);
     Clipboard.setString(account.password);
+  };
+
+  const onLocalDelete = () => {
+    onDelete(account)
   };
 
   return (
@@ -42,7 +49,7 @@ const AccountItem = ({account}) => {
           <Button title="open link" />
         )}
         <Button title="update" />
-        <Button title="delete" />
+        <Button title="delete" onPress={onLocalDelete} />
       </View>
     </View>
   );
