@@ -105,7 +105,7 @@ const AccountItem = ({account, onDelete, onUpdate}) => {
 
       <Card.Actions style={{justifyContent: 'space-between'}}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <Text>{localIsFavorite ? 'remove' : 'add'} favorite</Text>
+          <Text>favorite</Text>
           <Switch value={localIsFavorite} onValueChange={onToggleFavorite} />
         </View>
 

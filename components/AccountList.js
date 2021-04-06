@@ -1,7 +1,6 @@
 import React from 'react';
-import {FlatList, Text} from 'react-native';
-import {useTheme} from 'react-native-paper';
-import useWindowDimensions from 'react-native/Libraries/Utilities/useWindowDimensions';
+import {FlatList} from 'react-native';
+import {useTheme, Card} from 'react-native-paper';
 import AccountItem from './AccountItem';
 
 const AccountList = ({accounts, onDelete, onUpdate}) => {
@@ -27,7 +26,9 @@ const AccountList = ({accounts, onDelete, onUpdate}) => {
       />
 
       {accounts.length === 0 && (
-        <Text>this accounts list is currently empty</Text>
+        <Card>
+          <Card.Title title="Empty account" subtitle="this accounts list is currently empty" />
+        </Card>
       )}
     </>
   );

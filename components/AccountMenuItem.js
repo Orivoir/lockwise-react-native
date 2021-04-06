@@ -53,7 +53,7 @@ const AccountMenuItem = ({
         title="open link"
         titleStyle={styles.item}
         onPress={onLocalOpenLink}
-        disabled={!!account.loginUrl}
+        disabled={!account.loginUrl}
         icon="open-in-new"
       />
 
