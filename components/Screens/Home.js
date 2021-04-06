@@ -10,10 +10,17 @@ const Home = ({navigation, accounts}) => {
     });
   };
 
+  const onUpdate = account => {
+    navigation.navigate('AccountEdit', {
+      account
+    });
+  };
+
   return (
     <AccountList
       accounts={accounts}
       onDelete={onDelete}
+      onUpdate={onUpdate}
     />
   );
 };

@@ -4,7 +4,8 @@ import AccountItem from './AccountItem';
 
 const AccountList = ({
   accounts,
-  onDelete
+  onDelete,
+  onUpdate
 }) => {
   return (
     <ScrollView>
@@ -13,6 +14,7 @@ const AccountList = ({
           account={account}
           key={account.id}
           onDelete={onDelete}
+          onUpdate={onUpdate}
         />
       ))}
     </ScrollView>

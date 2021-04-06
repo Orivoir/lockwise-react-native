@@ -25,7 +25,8 @@ Account extends AccountCreate {
 
 const AccountItem = ({
   account,
-  onDelete
+  onDelete,
+  onUpdate
 }) => {
 
   const onCopyPassword = () => {
@@ -37,6 +38,10 @@ const AccountItem = ({
     onDelete(account)
   };
 
+  const onLocalUpdate= () => {
+    onUpdate(account);
+  };
+
   return (
     <View>
       <Text>{account.platform}</Text>
@@ -45,10 +50,12 @@ const AccountItem = ({
       <View>
         <Switch value={!!account.isFavorite}  />
         <Button title="copy password" onPress={onCopyPassword} />
+
         {!!account.loginUrl && (
           <Button title="open link" />
         )}
-        <Button title="update" />
+
+        <Button title="update" onPress={onLocalUpdate} />
         <Button title="delete" onPress={onLocalDelete} />
       </View>
     </View>
