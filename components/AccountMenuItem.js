@@ -1,5 +1,5 @@
 import React from 'react';
-import {Menu, Button} from 'react-native-paper';
+import {Menu, Button, useTheme} from 'react-native-paper';
 
 const AccountMenuItem = ({
   account,
@@ -44,23 +44,53 @@ const AccountMenuItem = ({
     onOpenLink();
   };
 
+  const {colors} = useTheme();
+
   return (
     <Menu
       visible={isOpen}
       onDismiss={onClose}
       anchor={openMenuRenderer}
     >
-      <Menu.Item title="copy password" onPress={onLocalCopyPassword} />
+      <Menu.Item
+        title="copy password"
+        titleStyle={styles.item}
+        onPress={onLocalCopyPassword}
+        icon="content-copy"
+      />
 
-      {!!account.loginUrl && (
-        <Menu.Item title="open link" onPress={onLocalOpenLink} />
-      )}
+      <Menu.Item
+        title="open link"
+        titleStyle={styles.item}
+        onPress={onLocalOpenLink}
+        disabled={!!account.loginUrl}
+        icon="open-in-new"
+      />
 
-      <Menu.Item title="update" onPress={onLocalUpdate} />
+      <Menu.Item
+        title="update"
+        titleStyle={styles.item}
+        onPress={onLocalUpdate}
+        icon="pencil"
+      />
 
-      <Menu.Item title="delete" onPress={onLocalDelete} />
+      <Menu.Item
+        title="delete"
+        titleStyle={{
+          color: colors.error,
+          ...styles.item
+        }}
+        onPress={onLocalDelete}
+        icon="delete"
+      />
     </Menu>
   );
 }
 
 export default AccountMenuItem;
+
+const styles = {
+  item: {
+    fontSize: 20
+  }
+};
