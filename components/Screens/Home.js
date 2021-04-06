@@ -17,8 +17,9 @@ const Home = ({navigation, accounts}) => {
   };
 
   return (
+    // Home screen show only favorite account
     <AccountList
-      accounts={accounts}
+      accounts={accounts.filter(account => account.isFavorite)}
       onDelete={onDelete}
       onUpdate={onUpdate}
     />
