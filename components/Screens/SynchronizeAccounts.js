@@ -3,12 +3,16 @@ import React from 'react';
 import {getCount,isAvailable as isAvailableServerSync,getAll} from './../../apis/synchronize/accounts'
 import {createMultiple, updateMultiple} from './../../apis/local/accounts';
 
+import {View} from 'react-native';
+
 import {
-  // prototype view components
-  View,
+  Button,
+  Headline,
   Text,
-  Button
-} from 'react-native';
+  ActivityIndicator,
+  useTheme
+} from 'react-native-paper';
+
 import SynchronizeAccountsList from '../SynchronizeAccountsList';
 import { useFocusEffect } from '@react-navigation/core';
 import { connect, useDispatch } from 'react-redux';
@@ -25,7 +29,7 @@ const SynchronizeAccounts = ({navigation, accounts}) => {
   const onLoad = () => {
     getCount()
     .then(({count}) => {
-      console.info('server has', count, 'account')
+      // console.info('server has', count, 'account')
       getAll(count)
       .then(fetchAccounts => {
         numberAccounts.current = count;
@@ -136,10 +140,10 @@ const SynchronizeAccounts = ({navigation, accounts}) => {
 
     const onProgressSynchronize = () => {
       setSynchronizeStatus(currentSynchronizeStatus => {
-        console.log(`> sync progress: ${currentSynchronizeStatus.progress + 1}/${(accountsToUpdate.length)+(accountsToCreate.length)}`);
+        // console.log(`> sync progress: ${currentSynchronizeStatus.progress + 1}/${(accountsToUpdate.length)+(accountsToCreate.length)}`);
         return {
           value: currentSynchronizeStatus.value,
-          progress: currentSynchronizeStatus.progress + 1
+          progress: (currentSynchronizeStatus.progress + 1 / ((accountsToUpdate.length)+(accountsToCreate.length)))
         };
       });
     };
@@ -147,7 +151,7 @@ const SynchronizeAccounts = ({navigation, accounts}) => {
     const accountsToCreate = [];
     const accountsToUpdate = [];
 
-    console.info('> start accounts group by:')
+    // console.info('> start accounts group by:')
     // accounts group by
     accountsSelected.forEach(accountSelected => {
       const cloneAccountIntoStore = findAccountFromStore(accountSelected);
@@ -171,13 +175,13 @@ const SynchronizeAccounts = ({navigation, accounts}) => {
       }
     });
 
-    console.info('> to update: ', accountsToUpdate.length);
-    console.info('> to create: ', accountsToCreate.length);
-    console.info('> start synchronize:');
+    // console.info('> to update: ', accountsToUpdate.length);
+    // console.info('> to create: ', accountsToCreate.length);
+    // console.info('> start synchronize:');
 
     createMultiple(accountsToCreate, onProgressSynchronize)
     .then(accountsToCreateBack => {
-      console.log(`> has synchronize with create: ${accountsToCreateBack.length}/${accountsToCreate.length} accounts`);
+      // console.log(`> has synchronize with create: ${accountsToCreateBack.length}/${accountsToCreate.length} accounts`);
       endStep({
         type: "create",
         accountsSynchronized: accountsToCreateBack
@@ -190,7 +194,7 @@ const SynchronizeAccounts = ({navigation, accounts}) => {
 
     updateMultiple(accountsToUpdate, onProgressSynchronize)
     .then(accountToUpdateBack => {
-      console.log(`> has synchronize with update ${accountToUpdateBack.length}/${accountsToUpdate.length} accounts`);
+      // console.log(`> has synchronize with update ${accountToUpdateBack.length}/${accountsToUpdate.length} accounts`);
       endStep({
         type: "update",
         accountsSynchronized: accountToUpdateBack
@@ -203,26 +207,67 @@ const SynchronizeAccounts = ({navigation, accounts}) => {
 
   };
 
+  const {colors} = useTheme();
+
   if(synchronizeStatus.value) {
     return (
-      <Text>{synchronizeStatus.progress}</Text>
+      // <Text>{synchronizeStatus.progress}</Text>
+      <View style={{
+        flex: 1,
+        backgroundColor: colors.background,
+        alignItems:"center",
+        justifyContent: "center"
+      }}>
+        <Headline>{(synchronizeStatus.progress* 100).toFixed(2)}%</Headline>
+        <ActivityIndicator size={32} />
+      </View>
     );
   }
 
   return (
-    <View>
+    <View
+      style={{
+        backgroundColor: colors.background
+      }}
+    >
       {isPending ? (
         <Text>Loading...</Text>
       ): (
         <>
-          <Text>Server sync has {numberAccounts.current} accounts</Text>
+          <View
+            style={{
+              padding: 8
+            }}
+          >
+            <Headline
+              style={{
+                marginVertical: 4
+              }}
+            >Server sync has {numberAccounts.current} accounts</Headline>
 
-          <View>
-            <Button onPress={onStartSynchronizeAccount} title={`synchronize ${accountsSelected.length}/${syncAccounts.current.length} accounts`} />
-          </View>
+            <View
+              style={{
+                marginVertical: 4
+              }}
+            >
+              <Button
+                mode="contained"
+                onPress={onStartSynchronizeAccount}
+              >
+                synchronize {accountsSelected.length}/{syncAccounts.current.length} accounts
+              </Button>
+            </View>
 
-          <View>
-            <Button title="reload" onPress={onReload} />
+            <View
+              style={{
+                marginVertical: 4
+              }}
+            >
+              {/* <Button title="reload" onPress={onReload} /> */}
+              <Button onPress={onReload}>
+                reload
+              </Button>
+            </View>
           </View>
 
           <SynchronizeAccountsList accounts={syncAccounts.current} onToggleSyncAccount={onToggleSyncAccount} />

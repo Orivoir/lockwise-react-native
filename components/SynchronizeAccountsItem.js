@@ -1,11 +1,6 @@
 import React from 'react';
 
-import {
-  // prototype view components
-  View,
-  Text,
-  Button
-} from 'react-native';
+import {Checkbox, Card, Headline, Text, useTheme} from 'react-native-paper';
 
 const SynchronizeAccountsItem = ({
   account,
@@ -20,15 +15,29 @@ const SynchronizeAccountsItem = ({
   };
 
   return (
-    <View>
-      <Text>id: {account.id}</Text>
-      <Text>platform: {account.platform}</Text>
-      <Text>login: {account.login}</Text>
-      <Text>login URL: {account.urlLogin || "not exists"}</Text>
+    <Card
+      style={{
+        marginVertical: 4
+      }}
+    >
+      <Card.Title title={account.platform} subtitle={account.login} />
+
+      <Card.Content></Card.Content>
+
+      <Card.Actions>
+        <Text>Synchronize</Text>
+        <Checkbox.Android
+          status={isSelectSyncAccount ? "checked": "unchecked"}
+          onPress={onLocalToggleSelectSyncAccount} />
+      </Card.Actions>
+      {/* <Text>id: {account.id}</Text> */}
+      {/* <Text>platform: {account.platform}</Text> */}
+      {/* <Text>login: {account.login}</Text> */}
+      {/* <Text>login URL: {account.urlLogin || "not exists"}</Text> */}
       {/* <CheckBox onValueChange={onToggleSelectSyncAccount} value={isSelectSyncAccount} /> */}
-      <Text>is selected {isSelectSyncAccount ? "yes": "no"}</Text>
-      <Button title="toggle select" onPress={onLocalToggleSelectSyncAccount} />
-    </View>
+      {/* <Text>is selected {isSelectSyncAccount ? "yes": "no"}</Text> */}
+      {/* <Button title="toggle select" onPress={onLocalToggleSelectSyncAccount} /> */}
+    </Card>
   );
 }
 

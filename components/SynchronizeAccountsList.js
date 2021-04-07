@@ -1,12 +1,9 @@
 import React from 'react';
 
 import {
-  // prototype view components
-  View,
-  Text,
-  Button,
-  ScrollView
+  FlatList
 } from 'react-native';
+import { useTheme } from 'react-native-paper';
 import SynchronizeAccountsItem from './SynchronizeAccountsItem';
 
 const SynchronizeAccountsList = ({
@@ -14,16 +11,35 @@ const SynchronizeAccountsList = ({
   onToggleSyncAccount
 }) => {
 
+  const {colors} = useTheme();
+
   return (
-    <ScrollView>
-      {accounts.map(account => (
+    <>
+    <FlatList
+      data={accounts}
+      contentContainerStyle={{
+        paddingHorizontal: 8,
+        paddingVertical: 16,
+        backgroundColor: colors.background
+      }}
+      renderItem={({item}) => (
+        <SynchronizeAccountsItem
+          key={item.id}
+          account={item}
+          onToggleSyncAccount={onToggleSyncAccount}
+        />
+      )}
+      keyExtractor={account => account.id}
+    />
+      {/* {accounts.map(account => (
         <SynchronizeAccountsItem
           key={account.id}
           account={account}
           onToggleSyncAccount={onToggleSyncAccount}
         />
-      ))}
-    </ScrollView>
+      ))} */}
+    {/* </FlatList> */}
+    </>
   );
 }
 
