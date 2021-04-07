@@ -12,8 +12,10 @@ export const NETWORK_REDUCERS_INITIAL_STATE = {
   isConnected: false,
   isInternetReachable: false,
   isWifiEnable: false,
-  details: null
+  details: null,
+  isInitialState: true
 };
 
 export const SAFE_SSID = "SFR_F430";
 export const SYNCHRONIZE_BASE_URL = "http://192.168.1.92:8080/";
+export const SYNCHRONIZE_MAX_ITEMS_FETCH_BY_PAGE = 10;
