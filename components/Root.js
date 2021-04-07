@@ -7,11 +7,28 @@ import AccountEdit from './Screens/AccountEdit';
 import Home from './Screens/Home';
 import ModalConfirmDelete from './Screens/ModalConfirmDelete';
 import StoreAccounts from './Screens/StoreAccounts';
+import SynchronizeAccounts from './Screens/SynchronizeAccounts';
+
 import HeaderRight from './HeaderRight';
 import {useTheme} from 'react-native-paper';
 
 const MainStack = createNativeStackNavigator();
 const RootStack = createNativeStackNavigator();
+const SynchronizeStack = createNativeStackNavigator();
+
+const SynchronizeRouting = () => {
+
+  return (
+    <SynchronizeStack.Navigator
+      initialRouteName="SynchronizeAccounts"
+    >
+      {/* recheck synchronize server status before operation because HTTP connection not listen disconnect  */}
+      {/* if synchronize server is available fetch and show list accounts account into synchronize server with a select list */}
+      {/* add option synchronize for a single account and synchronize all */}
+      <SynchronizeStack.Screen name="SynchronizeAccounts" component={SynchronizeAccounts} />
+    </SynchronizeStack.Navigator>
+  )
+};
 
 const MainStackRouting = () => {
   const {colors} = useTheme();
@@ -40,6 +57,8 @@ const Root = () => {
     <NavigationContainer>
       <RootStack.Navigator mode="modal" screenOptions={{headerShown: false}}>
         <RootStack.Screen name="Main" component={MainStackRouting} />
+
+        <RootStack.Screen name="Synchronize" component={SynchronizeRouting} />
 
         <RootStack.Screen
           name="ModalConfirmDelete"
