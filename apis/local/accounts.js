@@ -211,8 +211,19 @@ export function update(account) {
   });
 }
 
+/**
+ *
+ * @param {{platform: string, login: string, ?urlLogin: string | null, ?isFavorite: boolean | null}[]} accounts - accounts to update
+ * @param {(Account[]) => void} onProgress - callback fired after each single operation *optional argument*
+ * @param {(Account[]) => void} originalResolve - you should give always `null` this params is use for remote original `resolve` function during recursive call into body function
+ * @param {(Error) => void} originalReject - you should give always `null` this params is use for remote original `reject` function during recursive call into body function
+ * @param {Account[]} outputsAccounts - you should give always `null` this params is use for persist `accounts` create during recursive call into body function
+ * @returns {Promise<Account[]>} - accounts updated
+ */
 export function updateMultiple(
   accounts,
+  onProgress,
+
   originalResolve = null,
   originalReject=null,
   outputsAccounts = [],
@@ -233,12 +244,18 @@ export function updateMultiple(
           outputsAccounts.push(accountBack);
           const newAccounts = accounts.slice(1);
 
+          if(onProgress instanceof Function) {
+            onProgress(outputsAccounts);
+          }
+
           if (newAccounts.length >= accounts.length) {
             throw new Error('updateMultiple steps is broke');
           }
 
           updateMultiple(
             newAccounts,
+            onProgress,
+
             originalResolve || resolve,
             originalReject || reject,
             outputsAccounts,
@@ -305,6 +322,7 @@ export function removeById(accountId) {
 /**
  *
  * @param {{platform: string, login: string, ?urlLogin: string | null, ?isFavorite: boolean | null}[]} accounts - accounts to appends
+ * @param {(Account[]) => void} onProgress - callback fired after each single operation *optional argument*
  * @param {(Account[]) => void} originalResolve - you should give always `null` this params is use for remote original `resolve` function during recursive call into body function
  * @param {(Error) => void} originalReject - you should give always `null` this params is use for remote original `reject` function during recursive call into body function
  * @param {Account[]} outputsAccounts - you should give always `null` this params is use for persist `accounts` create during recursive call into body function
@@ -312,6 +330,8 @@ export function removeById(accountId) {
  */
 export function createMultiple(
   accounts,
+  onProgress,
+
   originalResolve = null,
   originalReject=null,
   outputsAccounts = [],
@@ -331,12 +351,18 @@ export function createMultiple(
           outputsAccounts.push(accountCreated);
           const newAccounts = accounts.slice(1);
 
+          if(onProgress instanceof Function) {
+            onProgress(outputsAccounts);
+          }
+
           if (newAccounts.length >= accounts.length) {
             throw new Error('createMultiple steps is broke');
           }
 
           createMultiple(
             newAccounts,
+            onProgress,
+
             originalResolve || resolve,
             originalReject || reject,
             outputsAccounts,
