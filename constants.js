@@ -7,3 +7,13 @@ export const THEME_REDUCERS_INITIAL_STATE = {
   name: 'light',
   value: LightTheme,
 };
+export const NETWORK_REDUCERS_INITIAL_STATE = {
+  type: "none",
+  isConnected: false,
+  isInternetReachable: false,
+  isWifiEnable: false,
+  details: null
+};
+
+export const SAFE_SSID = "SFR_F430";
+export const SYNCHRONIZE_BASE_URL = "http://192.168.1.92:8080/";
