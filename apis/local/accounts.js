@@ -266,12 +266,14 @@ export function removeById(accountId) {
  *
  * @param {{platform: string, login: string, ?urlLogin: string | null, ?isFavorite: boolean | null}[]} accounts - accounts to appends
  * @param {(Account[]) => void} originalResolve - you should give always `null` this params is use for remote original `resolve` function during recursive call into body function
+ * @param {(Error) => void} originalReject - you should give always `null` this params is use for remote original `reject` function during recursive call into body function
  * @param {Account[]} outputsAccounts - you should give always `null` this params is use for persist `accounts` create during recursive call into body function
  * @returns {Promise<Account[]>} - accounts created
  */
 export function createMultiple(
   accounts,
   originalResolve = null,
+  originalReject=null,
   outputsAccounts = [],
 ) {
   const accountPush = accounts[0];
@@ -296,11 +298,12 @@ export function createMultiple(
           createMultiple(
             newAccounts,
             originalResolve || resolve,
+            originalReject || reject,
             outputsAccounts,
           );
         })
         .catch(error =>
-          reject({error: error, accountsCreated: outputsAccounts}),
+          originalReject({error: error, accountsCreated: outputsAccounts}),
         );
     });
   }
