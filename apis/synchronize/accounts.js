@@ -1,6 +1,7 @@
 import {
   SYNCHRONIZE_BASE_URL,
-  SYNCHRONIZE_MAX_ITEMS_FETCH_BY_PAGE
+  SYNCHRONIZE_MAX_ITEMS_FETCH_BY_PAGE,
+  TIMEOUT_SERVER_SYNCHRONIZE
 } from './../../constants';
 
 /*
@@ -40,16 +41,30 @@ const getAbsoluteUrl = pathname => {
  */
 export const isAvailable = () => {
   console.log("start fetch at: ", getAbsoluteUrl('/ping'));
+  let isResolve = false;
+
   return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if(!isResolve) {
+        isResolve = true;
+        resolve(false);
+      }
+    }, TIMEOUT_SERVER_SYNCHRONIZE);
     fetch(getAbsoluteUrl('/ping'), {method: "GET"})
     .then(response => response.json())
     .then(data => {
-      resolve(!!data.success);
+      if(!isResolve) {
+        isResolve = true;
+        resolve(!!data.success);
+      }
     })
     .catch(error => {
       // can be network error
       console.error(`server synchronize not available with: ${error.message}`);
-      resolve(false);
+      if(!isResolve) {
+        isResolve = true;
+        resolve(false);
+      }
     });
   });
 };
@@ -94,7 +109,13 @@ export const getAll = (
     .then(responses => (
       Promise.all(responses.map(response => response.json())
     )))
-    .then(resolve)
+    .then(datas => {
+      const joinData = [];
+
+      datas.forEach(data => joinData.push(...data.items));
+
+      resolve(joinData);
+    })
     .catch(reject);
   });
 
