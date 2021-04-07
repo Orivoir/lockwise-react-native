@@ -16,7 +16,7 @@ import { connect, useDispatch } from 'react-redux';
 const SynchronizeAccounts = ({navigation, accounts}) => {
 
   const [isPending, setIsPending] = React.useState(true);
-  const [synchronizeStatus, setSynchronizeStatus] = React.useState({progess: null, value: false});
+  const [synchronizeStatus, setSynchronizeStatus] = React.useState({progress: null, value: false});
   const [accountsSelected, setAccountsSelected] = React.useState([]);
 
   const numberAccounts = React.useRef(null);
@@ -52,7 +52,7 @@ const SynchronizeAccounts = ({navigation, accounts}) => {
           console.info('server sync always available');
           onLoad();
         } else {
-          navigation.navigation('Main');
+          navigation.navigate('Main');
         }
       })
       .catch(error => {
@@ -84,37 +84,64 @@ const SynchronizeAccounts = ({navigation, accounts}) => {
   const dispatch = useDispatch();
   const onStartSynchronizeAccount = () => {
 
+    if(synchronizeStatus.value) {
+      console.warn('already into sync action');
+      return;
+    }
+
     if(accountsSelected.length === 0) {
       console.warn('has start sync for 0 account, synchronize task has been aborted');
       return;
     }
+    setSynchronizeStatus({
+      value: true,
+      progress: 0
+    });
 
     const findAccountFromStore = syncAccount => {
       return accounts.find(storeAccount => (
         // because synchronize server not shared same id for account :'(
         storeAccount.login === syncAccount.login &&
-        storeAccount.platform === syncAccount.platform &&
-        storeAccount.password === syncAccount.password &&
-        storeAccount.isFavorite === syncAccount.isFavorite &&
-        // because synchronize server not use same attribute name for "loginUrl"
-        storeAccount.loginUrl === syncAccount.urlLogin
+        storeAccount.platform === syncAccount.platform
       ))
     };
 
+    let steps = 0;
+
     const endStep = stepStatus => {
+      steps++;
       const {type, accountsSynchronized} = stepStatus;
-      const ACTION_NAME = type === "update" ? "UPDATE_ACCOUNT": "ADD_ACCOUNT";
+      const ACTION_NAME = type === "update" ? "UPDATE_MULTIPLE_ACCOUNTS": "ADD_MULTIPLE_ACCOUNTS";
 
       console.log(`upgrade redux store ${type} ${ACTION_NAME} number accounts:${accountsSynchronized.length}`);
 
-      // upgrade store
-      accountsSynchronized.forEach(accountSynchronized => {
+      // accountsSynchronized.forEach(accountSynchronized => {
+        // upgrade store
         dispatch({
           type: ACTION_NAME,
-          account: accountSynchronized
+          accounts: accountsSynchronized
         });
-      });
+      // });
 
+      if(steps === 2) {
+        // have finish synchronize with upgrade and create
+        console.log("> finish sync");
+        setSynchronizeStatus({
+          value: false,
+          progress: null
+        });
+        setAccountsSelected([]);
+      }
+    };
+
+    const onProgressSynchronize = () => {
+      setSynchronizeStatus(currentSynchronizeStatus => {
+        console.log(`> sync progress: ${currentSynchronizeStatus.progress + 1}/${(accountsToUpdate.length)+(accountsToCreate.length)}`);
+        return {
+          value: currentSynchronizeStatus.value,
+          progress: currentSynchronizeStatus.progress + 1
+        };
+      });
     };
 
     const accountsToCreate = [];
@@ -148,7 +175,7 @@ const SynchronizeAccounts = ({navigation, accounts}) => {
     console.info('> to create: ', accountsToCreate.length);
     console.info('> start synchronize:');
 
-    createMultiple(accountsToCreate)
+    createMultiple(accountsToCreate, onProgressSynchronize)
     .then(accountsToCreateBack => {
       console.log(`> has synchronize with create: ${accountsToCreateBack.length}/${accountsToCreate.length} accounts`);
       endStep({
@@ -161,7 +188,7 @@ const SynchronizeAccounts = ({navigation, accounts}) => {
       throw new Error("sycnhronize create multiple has fail");
     });
 
-    updateMultiple(accountsToUpdate)
+    updateMultiple(accountsToUpdate, onProgressSynchronize)
     .then(accountToUpdateBack => {
       console.log(`> has synchronize with update ${accountToUpdateBack.length}/${accountsToUpdate.length} accounts`);
       endStep({
@@ -178,7 +205,7 @@ const SynchronizeAccounts = ({navigation, accounts}) => {
 
   if(synchronizeStatus.value) {
     return (
-      <Text>{synchronizeStatus.progess}</Text>
+      <Text>{synchronizeStatus.progress}</Text>
     );
   }
 
@@ -188,7 +215,7 @@ const SynchronizeAccounts = ({navigation, accounts}) => {
         <Text>Loading...</Text>
       ): (
         <>
-          <Text>Server sync has {numberAccounts.currnet} accounts</Text>
+          <Text>Server sync has {numberAccounts.current} accounts</Text>
 
           <View>
             <Button onPress={onStartSynchronizeAccount} title={`synchronize ${accountsSelected.length}/${syncAccounts.current.length} accounts`} />
