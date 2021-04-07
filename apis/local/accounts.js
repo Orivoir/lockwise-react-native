@@ -211,6 +211,46 @@ export function update(account) {
   });
 }
 
+export function updateMultiple(
+  accounts,
+  originalResolve = null,
+  originalReject=null,
+  outputsAccounts = [],
+) {
+
+  const accountUpdate = accounts[0];
+  if (!accountUpdate) {
+    if (originalResolve instanceof Function) {
+      return originalResolve(outputsAccounts);
+    } else {
+      // has call with: accounts.length === 0
+      return Promise.resolve([]);
+    }
+  } else {
+    return new Promise((resolve, reject) => {
+      update(accountUpdate)
+        .then(accountBack => {
+          outputsAccounts.push(accountBack);
+          const newAccounts = accounts.slice(1);
+
+          if (newAccounts.length >= accounts.length) {
+            throw new Error('updateMultiple steps is broke');
+          }
+
+          updateMultiple(
+            newAccounts,
+            originalResolve || resolve,
+            originalReject || reject,
+            outputsAccounts,
+          );
+        })
+        .catch(error =>
+          originalReject({error: error, accountsUpdated: outputsAccounts}),
+        );
+    });
+  }
+}
+
 /**
  * @description **warn:** remove action cant reserve, not copy save or factory remove as `isRemove: true`
  * @param {Account} account - account target remove action
