@@ -11,7 +11,7 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import {useDispatch} from 'react-redux';
 import {toggleFavorite} from './../apis/local/accounts';
 import AccountMenuItem from './AccountMenuItem';
-import {Switch, Card, Text, Divider} from 'react-native-paper';
+import {Switch, Card, Text, Divider, ActivityIndicator, useTheme} from 'react-native-paper';
 
 /*
 AccountCreate {
@@ -31,6 +31,8 @@ const AccountItem = ({account, onDelete, onUpdate}) => {
   const [localIsFavorite, setLocalIsFavorite] = React.useState(
     account.isFavorite,
   );
+
+  const [isDisabledSwitch, setIsDisabledSwitch] = React.useState(false);
 
   const onCopyPassword = () => {
     console.info('run copy password for:', account.password);
@@ -71,9 +73,12 @@ const AccountItem = ({account, onDelete, onUpdate}) => {
 
   const onToggleFavorite = () => {
     setLocalIsFavorite(currentLocalIsFavorite => !currentLocalIsFavorite);
+    setIsDisabledSwitch(true);
 
-    toggleFavorite(account)
+    setTimeout(() => {
+      toggleFavorite(account)
       .then(accountBack => {
+        setIsDisabledSwitch(false);
         if (!accountBack) {
           console.warn(
             'ask toggle favorite a account not exists into file storage',
@@ -92,12 +97,16 @@ const AccountItem = ({account, onDelete, onUpdate}) => {
         }
       })
       .catch(error => {
+        setIsDisabledSwitch(false);
         console.error(
           `local api toggle favorite has crash with: ${error.message}`,
         );
         throw new Error('local api toggle favorite has crash');
       });
+    }, 100);
   };
+
+  const {colors} = useTheme();
 
   return (
     <Card>
@@ -106,7 +115,10 @@ const AccountItem = ({account, onDelete, onUpdate}) => {
       <Card.Actions style={{justifyContent: 'space-between'}}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <Text>favorite</Text>
-          <Switch value={localIsFavorite} onValueChange={onToggleFavorite} />
+          <Switch disabled={isDisabledSwitch} value={localIsFavorite} onValueChange={onToggleFavorite} />
+          {isDisabledSwitch && (
+            <ActivityIndicator size={16} color={colors.accent} />
+          )}
         </View>
 
         <AccountMenuItem
