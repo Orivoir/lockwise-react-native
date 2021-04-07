@@ -7,7 +7,7 @@ import networkReducers from './networkReducers';
 const rootReducers = combineReducers({
   accounts: accountsReducers,
   theme: themeReducers,
-  network: networkReducers
+  network: networkReducers,
 });
 
 export default rootReducers;

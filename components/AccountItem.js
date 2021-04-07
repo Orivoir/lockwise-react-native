@@ -11,7 +11,14 @@ import Clipboard from '@react-native-clipboard/clipboard';
 import {useDispatch} from 'react-redux';
 import {toggleFavorite} from './../apis/local/accounts';
 import AccountMenuItem from './AccountMenuItem';
-import {Switch, Card, Text, Divider, ActivityIndicator, useTheme} from 'react-native-paper';
+import {
+  Switch,
+  Card,
+  Text,
+  Divider,
+  ActivityIndicator,
+  useTheme,
+} from 'react-native-paper';
 
 /*
 AccountCreate {
@@ -77,32 +84,32 @@ const AccountItem = ({account, onDelete, onUpdate}) => {
 
     setTimeout(() => {
       toggleFavorite(account)
-      .then(accountBack => {
-        setIsDisabledSwitch(false);
-        if (!accountBack) {
-          console.warn(
-            'ask toggle favorite a account not exists into file storage',
+        .then(accountBack => {
+          setIsDisabledSwitch(false);
+          if (!accountBack) {
+            console.warn(
+              'ask toggle favorite a account not exists into file storage',
+            );
+            // synchronize store with file storage
+            dispatch({
+              type: 'REMOVE_ACCOUNT',
+              account: accountBack,
+            });
+          } else {
+            // synchronize store with file storage
+            dispatch({
+              type: 'UPDATE_ACCOUNT',
+              account: accountBack,
+            });
+          }
+        })
+        .catch(error => {
+          setIsDisabledSwitch(false);
+          console.error(
+            `local api toggle favorite has crash with: ${error.message}`,
           );
-          // synchronize store with file storage
-          dispatch({
-            type: 'REMOVE_ACCOUNT',
-            account: accountBack,
-          });
-        } else {
-          // synchronize store with file storage
-          dispatch({
-            type: 'UPDATE_ACCOUNT',
-            account: accountBack,
-          });
-        }
-      })
-      .catch(error => {
-        setIsDisabledSwitch(false);
-        console.error(
-          `local api toggle favorite has crash with: ${error.message}`,
-        );
-        throw new Error('local api toggle favorite has crash');
-      });
+          throw new Error('local api toggle favorite has crash');
+        });
     }, 100);
   };
 
@@ -115,7 +122,11 @@ const AccountItem = ({account, onDelete, onUpdate}) => {
       <Card.Actions style={{justifyContent: 'space-between'}}>
         <View style={{flexDirection: 'row', alignItems: 'center'}}>
           <Text>favorite</Text>
-          <Switch disabled={isDisabledSwitch} value={localIsFavorite} onValueChange={onToggleFavorite} />
+          <Switch
+            disabled={isDisabledSwitch}
+            value={localIsFavorite}
+            onValueChange={onToggleFavorite}
+          />
           {isDisabledSwitch && (
             <ActivityIndicator size={16} color={colors.accent} />
           )}

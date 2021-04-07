@@ -27,20 +27,21 @@ const getHeaderOptions = colors => ({
 });
 
 const SynchronizeRouting = () => {
-
   const {colors} = useTheme();
 
   return (
     <SynchronizeStack.Navigator
       initialRouteName="SynchronizeAccounts"
-      screenOptions={getHeaderOptions(colors)}
-    >
+      screenOptions={getHeaderOptions(colors)}>
       {/* recheck synchronize server status before operation because HTTP connection not listen disconnect  */}
       {/* if synchronize server is available fetch and show list accounts account into synchronize server with a select list */}
       {/* add option synchronize for a single account and synchronize all */}
-      <SynchronizeStack.Screen name="SynchronizeAccounts" component={SynchronizeAccounts} />
+      <SynchronizeStack.Screen
+        name="SynchronizeAccounts"
+        component={SynchronizeAccounts}
+      />
     </SynchronizeStack.Navigator>
-  )
+  );
 };
 
 const MainStackRouting = () => {
@@ -50,9 +51,21 @@ const MainStackRouting = () => {
     <MainStack.Navigator
       initialRouteName="Home"
       screenOptions={getHeaderOptions(colors)}>
-      <MainStack.Screen name="Home" options={{headerTitle: "Favorites"}} component={Home} />
-      <MainStack.Screen name="AccountEdit" options={{headerTitle: "Edit"}} component={AccountEdit} />
-      <MainStack.Screen name="StoreAccounts" options={{headerTitle: "Accounts"}} component={StoreAccounts} />
+      <MainStack.Screen
+        name="Home"
+        options={{headerTitle: 'Favorites'}}
+        component={Home}
+      />
+      <MainStack.Screen
+        name="AccountEdit"
+        options={{headerTitle: 'Edit'}}
+        component={AccountEdit}
+      />
+      <MainStack.Screen
+        name="StoreAccounts"
+        options={{headerTitle: 'Accounts'}}
+        component={StoreAccounts}
+      />
     </MainStack.Navigator>
   );
 };

@@ -1,7 +1,7 @@
 import {
   SYNCHRONIZE_BASE_URL,
   SYNCHRONIZE_MAX_ITEMS_FETCH_BY_PAGE,
-  TIMEOUT_SERVER_SYNCHRONIZE
+  TIMEOUT_SERVER_SYNCHRONIZE,
 } from './../../constants';
 
 /*
@@ -28,8 +28,8 @@ ApiResponseGetById extends ApiResponse {
 */
 
 const getAbsoluteUrl = pathname => {
-  if(pathname.charAt(0) === "/") {
-    pathname = pathname.slice(1,);
+  if (pathname.charAt(0) === '/') {
+    pathname = pathname.slice(1);
   }
 
   return SYNCHRONIZE_BASE_URL + pathname;
@@ -40,32 +40,34 @@ const getAbsoluteUrl = pathname => {
  * @returns {Promise<boolean>} - check if synchronize server is available
  */
 export const isAvailable = () => {
-  console.log("start fetch at: ", getAbsoluteUrl('/ping'));
+  console.log('start fetch at: ', getAbsoluteUrl('/ping'));
   let isResolve = false;
 
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      if(!isResolve) {
+      if (!isResolve) {
         isResolve = true;
         resolve(false);
       }
     }, TIMEOUT_SERVER_SYNCHRONIZE);
-    fetch(getAbsoluteUrl('/ping'), {method: "GET"})
-    .then(response => response.json())
-    .then(data => {
-      if(!isResolve) {
-        isResolve = true;
-        resolve(!!data.success);
-      }
-    })
-    .catch(error => {
-      // can be network error
-      console.error(`server synchronize not available with: ${error.message}`);
-      if(!isResolve) {
-        isResolve = true;
-        resolve(false);
-      }
-    });
+    fetch(getAbsoluteUrl('/ping'), {method: 'GET'})
+      .then(response => response.json())
+      .then(data => {
+        if (!isResolve) {
+          isResolve = true;
+          resolve(!!data.success);
+        }
+      })
+      .catch(error => {
+        // can be network error
+        console.error(
+          `server synchronize not available with: ${error.message}`,
+        );
+        if (!isResolve) {
+          isResolve = true;
+          resolve(false);
+        }
+      });
   });
 };
 
@@ -75,13 +77,12 @@ export const isAvailable = () => {
  */
 export const getCount = () => {
   return new Promise((resolve, reject) => {
-    fetch(getAbsoluteUrl('/count', {method: "GET"}))
-    .then(response => response.json())
-    .then(resolve)
-    .catch(reject);
+    fetch(getAbsoluteUrl('/count', {method: 'GET'}))
+      .then(response => response.json())
+      .then(resolve)
+      .catch(reject);
   });
 };
-
 
 // GET "/list?page={number}&limit={number}"
 export const getAll = (
@@ -92,33 +93,38 @@ export const getAll = (
   // originalReject=null,
   // outputData=null
 ) => {
-
-  if(typeof totalAccounts !== "number") {
+  if (typeof totalAccounts !== 'number') {
     throw new RangeError('arg1 number account should be a number, cant fetch');
   }
 
-  const totalPages = Math.ceil(totalAccounts/SYNCHRONIZE_MAX_ITEMS_FETCH_BY_PAGE);
+  const totalPages = Math.ceil(
+    totalAccounts / SYNCHRONIZE_MAX_ITEMS_FETCH_BY_PAGE,
+  );
 
   return new Promise((resolve, reject) => {
     Promise.all(
-      Array.from(Array(totalPages).keys()).map(index => (
-        getAbsoluteUrl(`/list?page=${(index+1)}&limit=${SYNCHRONIZE_MAX_ITEMS_FETCH_BY_PAGE}`)
-      ))
-      .map(urlTarget => fetch(urlTarget, {method: "GET"}))
+      Array.from(Array(totalPages).keys())
+        .map(index =>
+          getAbsoluteUrl(
+            `/list?page=${
+              index + 1
+            }&limit=${SYNCHRONIZE_MAX_ITEMS_FETCH_BY_PAGE}`,
+          ),
+        )
+        .map(urlTarget => fetch(urlTarget, {method: 'GET'})),
     )
-    .then(responses => (
-      Promise.all(responses.map(response => response.json())
-    )))
-    .then(datas => {
-      const joinData = [];
+      .then(responses =>
+        Promise.all(responses.map(response => response.json())),
+      )
+      .then(datas => {
+        const joinData = [];
 
-      datas.forEach(data => joinData.push(...data.items));
+        datas.forEach(data => joinData.push(...data.items));
 
-      resolve(joinData);
-    })
-    .catch(reject);
+        resolve(joinData);
+      })
+      .catch(reject);
   });
-
 };
 
 /**
@@ -128,9 +134,9 @@ export const getAll = (
  */
 export const getById = accountId => {
   return new Promise((resolve, reject) => {
-    fetch(getAbsoluteUrl(`/single/${accountId}`), {method: "GET"})
-    .then(response => response.json())
-    .then(resolve)
-    .catch(reject)
+    fetch(getAbsoluteUrl(`/single/${accountId}`), {method: 'GET'})
+      .then(response => response.json())
+      .then(resolve)
+      .catch(reject);
   });
 };

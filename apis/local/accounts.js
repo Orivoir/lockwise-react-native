@@ -225,10 +225,9 @@ export function updateMultiple(
   onProgress,
 
   originalResolve = null,
-  originalReject=null,
+  originalReject = null,
   outputsAccounts = [],
 ) {
-
   const accountUpdate = accounts[0];
   if (!accountUpdate) {
     if (originalResolve instanceof Function) {
@@ -244,7 +243,7 @@ export function updateMultiple(
           outputsAccounts.push(accountBack);
           const newAccounts = accounts.slice(1);
 
-          if(onProgress instanceof Function) {
+          if (onProgress instanceof Function) {
             onProgress(outputsAccounts);
           }
 
@@ -333,7 +332,7 @@ export function createMultiple(
   onProgress,
 
   originalResolve = null,
-  originalReject=null,
+  originalReject = null,
   outputsAccounts = [],
 ) {
   const accountPush = accounts[0];
@@ -351,7 +350,7 @@ export function createMultiple(
           outputsAccounts.push(accountCreated);
           const newAccounts = accounts.slice(1);
 
-          if(onProgress instanceof Function) {
+          if (onProgress instanceof Function) {
             onProgress(outputsAccounts);
           }
 
@@ -404,7 +403,6 @@ export function create(account) {
       }
 
       setAccounts(currentAccounts => {
-
         // cant use length of current accounts for generate id
         // because if a account middle position has been removed
         // cant generate double same id for next create e.g:
@@ -414,7 +412,9 @@ export function create(account) {
         // > append new account account.id = accounts.length (3)
         // > id: [0,2,3,3] <- Went wrong error id should be uniq
         // account.id = currentAccounts.length;
-        account.id = `${Date.now().toString()}${Math.random().toString().replace('.','-')}`;
+        account.id = `${Date.now().toString()}${Math.random()
+          .toString()
+          .replace('.', '-')}`;
 
         account.createAt = Date.now();
         return [...currentAccounts, account];

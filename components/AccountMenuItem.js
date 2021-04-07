@@ -11,7 +11,11 @@ const AccountMenuItem = ({
   const [isOpen, setIsOpen] = React.useState(false);
 
   const openMenuRenderer = React.useRef(
-    <IconButton icon="dots-horizontal" size={32} onPress={() => setIsOpen(true)} />
+    <IconButton
+      icon="dots-horizontal"
+      size={32}
+      onPress={() => setIsOpen(true)}
+    />,
   ).current;
 
   const onClose = () => setIsOpen(false);

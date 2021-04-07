@@ -2,11 +2,15 @@ import React from 'react';
 
 import {update, create} from './../../apis/local/accounts';
 
-import {
-  View,
-} from 'react-native';
+import {View} from 'react-native';
 
-import {Button,Headline,HelperText, TextInput, useTheme} from 'react-native-paper';
+import {
+  Button,
+  Headline,
+  HelperText,
+  TextInput,
+  useTheme,
+} from 'react-native-paper';
 
 import {useDispatch} from 'react-redux';
 
@@ -36,22 +40,22 @@ const AccountEdit = ({route, navigation}) => {
     const {password, login, platform} = fields.current;
 
     return (
-      password.length >= 2 && password.length <= 255 &&
-      login.length >= 2 && login.length <= 255 &&
-      platform.length >= 2 && platform.length <= 255
+      password.length >= 2 &&
+      password.length <= 255 &&
+      login.length >= 2 &&
+      login.length <= 255 &&
+      platform.length >= 2 &&
+      platform.length <= 255
     );
   };
 
   const [isVisibleError, setIsVisibleError] = React.useState(false);
 
   const onSubmit = () => {
-
     const isValid = isValidFields();
 
-    if(!isValid) {
-
+    if (!isValid) {
       setIsVisibleError(true);
-
     } else {
       setIsVisibleError(false);
       const fx = actionType === 'update' ? update : create;
@@ -105,17 +109,19 @@ const AccountEdit = ({route, navigation}) => {
           );
           throw new Error('storage call from FormEdit has crash');
         });
-
     }
-
   };
 
   const {colors} = useTheme();
 
   return (
     <View
-      style={{backgroundColor: colors.background, flex: 1, paddingHorizontal: 16, paddingVertical: 8}}
-    >
+      style={{
+        backgroundColor: colors.background,
+        flex: 1,
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+      }}>
       <Headline>{actionType} account</Headline>
 
       <HelperText type="error" visible={isVisibleError}>
@@ -125,10 +131,9 @@ const AccountEdit = ({route, navigation}) => {
       <View
         style={{
           flex: 1,
-          justifyContent: "space-evenly",
+          justifyContent: 'space-evenly',
           // backgroundColor: "red"
-        }}
-      >
+        }}>
         <View>
           <TextInput
             autoCorrect={false}
@@ -178,7 +183,9 @@ const AccountEdit = ({route, navigation}) => {
           />
         </View>
         <View>
-          <Button mode="contained" onPress={onSubmit}>{actionType} account</Button>
+          <Button mode="contained" onPress={onSubmit}>
+            {actionType} account
+          </Button>
         </View>
       </View>
     </View>

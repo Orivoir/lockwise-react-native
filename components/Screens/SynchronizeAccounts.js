@@ -1,6 +1,10 @@
 import React from 'react';
 
-import {getCount,isAvailable as isAvailableServerSync,getAll} from './../../apis/synchronize/accounts'
+import {
+  getCount,
+  isAvailable as isAvailableServerSync,
+  getAll,
+} from './../../apis/synchronize/accounts';
 import {createMultiple, updateMultiple} from './../../apis/local/accounts';
 
 import {View} from 'react-native';
@@ -10,17 +14,19 @@ import {
   Headline,
   Text,
   ActivityIndicator,
-  useTheme
+  useTheme,
 } from 'react-native-paper';
 
 import SynchronizeAccountsList from '../SynchronizeAccountsList';
-import { useFocusEffect } from '@react-navigation/core';
-import { connect, useDispatch } from 'react-redux';
+import {useFocusEffect} from '@react-navigation/core';
+import {connect, useDispatch} from 'react-redux';
 
 const SynchronizeAccounts = ({navigation, accounts}) => {
-
   const [isPending, setIsPending] = React.useState(true);
-  const [synchronizeStatus, setSynchronizeStatus] = React.useState({progress: null, value: false});
+  const [synchronizeStatus, setSynchronizeStatus] = React.useState({
+    progress: null,
+    value: false,
+  });
   const [accountsSelected, setAccountsSelected] = React.useState([]);
 
   const numberAccounts = React.useRef(null);
@@ -28,43 +34,43 @@ const SynchronizeAccounts = ({navigation, accounts}) => {
 
   const onLoad = () => {
     getCount()
-    .then(({count}) => {
-      // console.info('server has', count, 'account')
-      getAll(count)
-      .then(fetchAccounts => {
-        numberAccounts.current = count;
-        syncAccounts.current = fetchAccounts;
-        setIsPending(false);
+      .then(({count}) => {
+        // console.info('server has', count, 'account')
+        getAll(count)
+          .then(fetchAccounts => {
+            numberAccounts.current = count;
+            syncAccounts.current = fetchAccounts;
+            setIsPending(false);
+          })
+          .catch(error => {
+            console.error('fetch all accounts has crash with:', error.message);
+            throw new Error('fetch all account has crash');
+          });
       })
       .catch(error => {
-        console.error("fetch all accounts has crash with:", error.message);
-        throw new Error('fetch all account has crash');
-      })
-    })
-    .catch(error => {
-      console.error("fetch count has crash with:", error.message);
-      throw new Error('fetch count has crash');
-    });
+        console.error('fetch count has crash with:', error.message);
+        throw new Error('fetch count has crash');
+      });
   };
 
   useFocusEffect(() => {
-
-    if(!numberAccounts.current && !syncAccounts.current) {
+    if (!numberAccounts.current && !syncAccounts.current) {
       isAvailableServerSync()
-      .then(isAvailable => {
-        if(isAvailable) {
-          console.info('server sync always available');
-          onLoad();
-        } else {
-          navigation.navigate('Main');
-        }
-      })
-      .catch(error => {
-        console.error(`verify status server sync has crash with: ${error.message}`);
-        throw new Error('verify status server sync has crash');
-      });
+        .then(isAvailable => {
+          if (isAvailable) {
+            console.info('server sync always available');
+            onLoad();
+          } else {
+            navigation.navigate('Main');
+          }
+        })
+        .catch(error => {
+          console.error(
+            `verify status server sync has crash with: ${error.message}`,
+          );
+          throw new Error('verify status server sync has crash');
+        });
     }
-
   });
 
   const onReload = () => {
@@ -73,41 +79,45 @@ const SynchronizeAccounts = ({navigation, accounts}) => {
   };
 
   const onToggleSyncAccount = ({account, isSelected}) => {
-    if(isSelected) {
-      setAccountsSelected(currentAccountsSelected => ([
+    if (isSelected) {
+      setAccountsSelected(currentAccountsSelected => [
         ...currentAccountsSelected,
-        account
-      ]));
+        account,
+      ]);
     } else {
-      setAccountsSelected(currentAccountsSelected => (
-        currentAccountsSelected.filter(currentAccountSelected => currentAccountSelected.id !== account.id)
-      ));
+      setAccountsSelected(currentAccountsSelected =>
+        currentAccountsSelected.filter(
+          currentAccountSelected => currentAccountSelected.id !== account.id,
+        ),
+      );
     }
   };
 
   const dispatch = useDispatch();
   const onStartSynchronizeAccount = () => {
-
-    if(synchronizeStatus.value) {
+    if (synchronizeStatus.value) {
       console.warn('already into sync action');
       return;
     }
 
-    if(accountsSelected.length === 0) {
-      console.warn('has start sync for 0 account, synchronize task has been aborted');
+    if (accountsSelected.length === 0) {
+      console.warn(
+        'has start sync for 0 account, synchronize task has been aborted',
+      );
       return;
     }
     setSynchronizeStatus({
       value: true,
-      progress: 0
+      progress: 0,
     });
 
     const findAccountFromStore = syncAccount => {
-      return accounts.find(storeAccount => (
-        // because synchronize server not shared same id for account :'(
-        storeAccount.login === syncAccount.login &&
-        storeAccount.platform === syncAccount.platform
-      ))
+      return accounts.find(
+        storeAccount =>
+          // because synchronize server not shared same id for account :'(
+          storeAccount.login === syncAccount.login &&
+          storeAccount.platform === syncAccount.platform,
+      );
     };
 
     let steps = 0;
@@ -115,24 +125,29 @@ const SynchronizeAccounts = ({navigation, accounts}) => {
     const endStep = stepStatus => {
       steps++;
       const {type, accountsSynchronized} = stepStatus;
-      const ACTION_NAME = type === "update" ? "UPDATE_MULTIPLE_ACCOUNTS": "ADD_MULTIPLE_ACCOUNTS";
+      const ACTION_NAME =
+        type === 'update'
+          ? 'UPDATE_MULTIPLE_ACCOUNTS'
+          : 'ADD_MULTIPLE_ACCOUNTS';
 
-      console.log(`upgrade redux store ${type} ${ACTION_NAME} number accounts:${accountsSynchronized.length}`);
+      console.log(
+        `upgrade redux store ${type} ${ACTION_NAME} number accounts:${accountsSynchronized.length}`,
+      );
 
       // accountsSynchronized.forEach(accountSynchronized => {
-        // upgrade store
-        dispatch({
-          type: ACTION_NAME,
-          accounts: accountsSynchronized
-        });
+      // upgrade store
+      dispatch({
+        type: ACTION_NAME,
+        accounts: accountsSynchronized,
+      });
       // });
 
-      if(steps === 2) {
+      if (steps === 2) {
         // have finish synchronize with upgrade and create
-        console.log("> finish sync");
+        console.log('> finish sync');
         setSynchronizeStatus({
           value: false,
-          progress: null
+          progress: null,
         });
         setAccountsSelected([]);
       }
@@ -143,7 +158,9 @@ const SynchronizeAccounts = ({navigation, accounts}) => {
         // console.log(`> sync progress: ${currentSynchronizeStatus.progress + 1}/${(accountsToUpdate.length)+(accountsToCreate.length)}`);
         return {
           value: currentSynchronizeStatus.value,
-          progress: (currentSynchronizeStatus.progress + 1 / ((accountsToUpdate.length)+(accountsToCreate.length)))
+          progress:
+            currentSynchronizeStatus.progress +
+            1 / (accountsToUpdate.length + accountsToCreate.length),
         };
       });
     };
@@ -161,14 +178,14 @@ const SynchronizeAccounts = ({navigation, accounts}) => {
         platform: accountSelected.platform,
         password: accountSelected.password,
         isFavorite: accountSelected.isFavorite,
-        loginUrl: accountSelected.urlLogin
+        loginUrl: accountSelected.urlLogin,
       };
 
-      if(cloneAccountIntoStore) {
+      if (cloneAccountIntoStore) {
         accountsToUpdate.push({
           ...accountCloned,
           // because update a account already exists into store
-          id: cloneAccountIntoStore.id
+          id: cloneAccountIntoStore.id,
         });
       } else {
         accountsToCreate.push(accountCloned);
@@ -180,45 +197,51 @@ const SynchronizeAccounts = ({navigation, accounts}) => {
     // console.info('> start synchronize:');
 
     createMultiple(accountsToCreate, onProgressSynchronize)
-    .then(accountsToCreateBack => {
-      // console.log(`> has synchronize with create: ${accountsToCreateBack.length}/${accountsToCreate.length} accounts`);
-      endStep({
-        type: "create",
-        accountsSynchronized: accountsToCreateBack
+      .then(accountsToCreateBack => {
+        // console.log(`> has synchronize with create: ${accountsToCreateBack.length}/${accountsToCreate.length} accounts`);
+        endStep({
+          type: 'create',
+          accountsSynchronized: accountsToCreateBack,
+        });
+      })
+      .catch(error => {
+        console.error(
+          'sycnhronize create multiple has fail with status:',
+          error,
+        );
+        throw new Error('sycnhronize create multiple has fail');
       });
-    })
-    .catch(error => {
-      console.error("sycnhronize create multiple has fail with status:", error);
-      throw new Error("sycnhronize create multiple has fail");
-    });
 
     updateMultiple(accountsToUpdate, onProgressSynchronize)
-    .then(accountToUpdateBack => {
-      // console.log(`> has synchronize with update ${accountToUpdateBack.length}/${accountsToUpdate.length} accounts`);
-      endStep({
-        type: "update",
-        accountsSynchronized: accountToUpdateBack
+      .then(accountToUpdateBack => {
+        // console.log(`> has synchronize with update ${accountToUpdateBack.length}/${accountsToUpdate.length} accounts`);
+        endStep({
+          type: 'update',
+          accountsSynchronized: accountToUpdateBack,
+        });
+      })
+      .catch(error => {
+        console.error(
+          'sycnhronize update multiple has fail with status:',
+          error,
+        );
+        throw new Error('sycnhronize update multiple has fail');
       });
-    })
-    .catch(error => {
-      console.error("sycnhronize update multiple has fail with status:", error);
-      throw new Error("sycnhronize update multiple has fail");
-    });
-
   };
 
   const {colors} = useTheme();
 
-  if(synchronizeStatus.value) {
+  if (synchronizeStatus.value) {
     return (
       // <Text>{synchronizeStatus.progress}</Text>
-      <View style={{
-        flex: 1,
-        backgroundColor: colors.background,
-        alignItems:"center",
-        justifyContent: "center"
-      }}>
-        <Headline>{(synchronizeStatus.progress* 100).toFixed(2)}%</Headline>
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: colors.background,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+        <Headline>{(synchronizeStatus.progress * 100).toFixed(2)}%</Headline>
         <ActivityIndicator size={32} />
       </View>
     );
@@ -227,56 +250,52 @@ const SynchronizeAccounts = ({navigation, accounts}) => {
   return (
     <View
       style={{
-        backgroundColor: colors.background
-      }}
-    >
+        backgroundColor: colors.background,
+      }}>
       {isPending ? (
         <Text>Loading...</Text>
-      ): (
+      ) : (
         <>
           <View
             style={{
-              padding: 8
-            }}
-          >
+              padding: 8,
+            }}>
             <Headline
               style={{
-                marginVertical: 4
-              }}
-            >Server sync has {numberAccounts.current} accounts</Headline>
+                marginVertical: 4,
+              }}>
+              Server sync has {numberAccounts.current} accounts
+            </Headline>
 
             <View
               style={{
-                marginVertical: 4
-              }}
-            >
-              <Button
-                mode="contained"
-                onPress={onStartSynchronizeAccount}
-              >
-                synchronize {accountsSelected.length}/{syncAccounts.current.length} accounts
+                marginVertical: 4,
+              }}>
+              <Button mode="contained" onPress={onStartSynchronizeAccount}>
+                synchronize {accountsSelected.length}/
+                {syncAccounts.current.length} accounts
               </Button>
             </View>
 
             <View
               style={{
-                marginVertical: 4
-              }}
-            >
+                marginVertical: 4,
+              }}>
               {/* <Button title="reload" onPress={onReload} /> */}
-              <Button onPress={onReload}>
-                reload
-              </Button>
+              <Button onPress={onReload}>reload</Button>
             </View>
           </View>
 
-          <SynchronizeAccountsList accounts={syncAccounts.current} onToggleSyncAccount={onToggleSyncAccount} />
+          <SynchronizeAccountsList
+            accounts={syncAccounts.current}
+            onToggleSyncAccount={onToggleSyncAccount}
+          />
         </>
       )}
     </View>
   );
-}
+};
 
 export default connect(state => ({
-  accounts: state.accounts
+  accounts: state.accounts,
 }))(SynchronizeAccounts);

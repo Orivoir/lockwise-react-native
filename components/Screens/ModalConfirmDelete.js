@@ -1,5 +1,5 @@
 import React from 'react';
-import { useTheme } from 'react-native-paper';
+import {useTheme} from 'react-native-paper';
 import {View} from 'react-native';
 import {Card, Button, HelperText} from 'react-native-paper';
 import {useDispatch} from 'react-redux';
@@ -8,6 +8,7 @@ import {remove} from './../../apis/local/accounts';
 
 const ModalConfirmDelete = ({route, navigation}) => {
   const dispatch = useDispatch();
+  const {colors} = useTheme();
 
   const {account} = route.params;
 
@@ -48,17 +49,14 @@ const ModalConfirmDelete = ({route, navigation}) => {
       });
   };
 
-  const {colors} = useTheme();
-
   return (
     <View
       style={{
         flex: 1,
         backgroundColor: colors.background,
-        justifyContent: "center",
-        paddingHorizontal: 16
-      }}
-    >
+        justifyContent: 'center',
+        paddingHorizontal: 16,
+      }}>
       <Card>
         <Card.Title
           title="Confirm delete action"
@@ -73,13 +71,17 @@ const ModalConfirmDelete = ({route, navigation}) => {
 
         <Card.Actions
           style={{
-            justifyContent: "space-between"
-          }}
-        >
-          <Button onPress={onCancel} labelStyle={{fontSize: 18}}>cancel</Button>
-          <Button onPress={onDelete} labelStyle={{fontSize: 16, color: colors.error}}>delete</Button>
+            justifyContent: 'space-between',
+          }}>
+          <Button onPress={onCancel} labelStyle={{fontSize: 18}}>
+            cancel
+          </Button>
+          <Button
+            onPress={onDelete}
+            labelStyle={{fontSize: 16, color: colors.error}}>
+            delete
+          </Button>
         </Card.Actions>
-
       </Card>
     </View>
   );

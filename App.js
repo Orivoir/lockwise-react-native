@@ -38,20 +38,22 @@ const App = ({accounts, theme, network}) => {
   });
 
   React.useEffect(() => {
-    const removeEventListener = NetworkInfo.addEventListener(newNetworkState => {
-      if(
-        newNetworkState.isConnected != network.isConnected ||
-        newNetworkState.isInternetReachable != network.isInternetReachable ||
-        newNetworkState.isWifiEnabled != network.isWifiEnabled ||
-        newNetworkState.details?.ssid != network.details?.ssid
-      ) {
-        console.log("has upgrade network state");
-        dispatch({
-          type: "NETWORK_CHANGE",
-          network: newNetworkState
-        });
+    const removeEventListener = NetworkInfo.addEventListener(
+      newNetworkState => {
+        if (
+          newNetworkState.isConnected != network.isConnected ||
+          newNetworkState.isInternetReachable != network.isInternetReachable ||
+          newNetworkState.isWifiEnabled != network.isWifiEnabled ||
+          newNetworkState.details?.ssid != network.details?.ssid
+        ) {
+          console.log('has upgrade network state');
+          dispatch({
+            type: 'NETWORK_CHANGE',
+            network: newNetworkState,
+          });
         }
-    });
+      },
+    );
 
     return () => {
       removeEventListener();
@@ -74,5 +76,5 @@ const App = ({accounts, theme, network}) => {
 export default connect(state => ({
   accounts: state.accounts,
   theme: state.theme,
-  network: state.network
+  network: state.network,
 }))(App);

@@ -27,7 +27,10 @@ const AccountList = ({accounts, onDelete, onUpdate}) => {
 
       {accounts.length === 0 && (
         <Card>
-          <Card.Title title="Empty account" subtitle="this accounts list is currently empty" />
+          <Card.Title
+            title="Empty account"
+            subtitle="this accounts list is currently empty"
+          />
         </Card>
       )}
     </>
