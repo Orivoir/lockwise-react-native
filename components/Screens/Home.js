@@ -2,6 +2,7 @@ import React from 'react';
 import AccountList from '../AccountList';
 import {connect} from 'react-redux';
 import FabCreate from '../FabCreate';
+import FabSynchronize from '../FabSynchronize';
 
 const Home = ({navigation, accounts}) => {
   const onDelete = account => {
@@ -28,6 +29,7 @@ const Home = ({navigation, accounts}) => {
         onDelete={onDelete}
         onUpdate={onUpdate}
       />
+      <FabSynchronize />
       <FabCreate onCreate={onCreateAccount} />
     </>
   );
