@@ -29,6 +29,11 @@ export default function accountsReducers(
   action,
 ) {
   switch (action.type) {
+    case 'ADD_MULTIPLE_ACCOUNTS':
+      if(action.accounts instanceof Array) {
+        return [...state, ...action.accounts];
+      }
+      return state;
     case 'ADD_ACCOUNT':
       if (typeof action.account === 'object') {
         return [...state, action.account];
@@ -44,6 +49,21 @@ export default function accountsReducers(
         return state.map(account =>
           account.id === action.account.id ? action.account : account,
         );
+      }
+      return state;
+    case 'UPDATE_MULTIPLE_ACCOUNTS':
+      if(action.accounts instanceof Array) {
+        // remove last accounts to update
+        const accountsLight = state.filter(account => (
+          // [{id,...}, {id,...}, ...] => [id,id,...]
+          !action.accounts.map(actionAccount => actionAccount.id).includes(account.id)
+        ));
+
+        // append new accounts
+        return [
+          ...accountsLight,
+          ...action.accounts
+        ]
       }
       return state;
     case 'HYDRATE_ACCOUNTS':
