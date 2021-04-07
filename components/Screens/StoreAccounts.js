@@ -2,6 +2,7 @@ import React from 'react';
 import AccountList from '../AccountList';
 import {connect} from 'react-redux';
 import FabCreate from '../FabCreate';
+import FabSynchronize from '../FabSynchronize';
 
 const StoreAccounts = ({navigation, accounts}) => {
   const onDelete = account => {
@@ -20,6 +21,10 @@ const StoreAccounts = ({navigation, accounts}) => {
     navigation.navigate('AccountEdit', {});
   };
 
+  const onSynchronize = () => {
+    navigation.navigate('Synchronize');
+  };
+
   return (
     <>
       {/* Stores account show all accounts */}
@@ -28,6 +33,7 @@ const StoreAccounts = ({navigation, accounts}) => {
         onDelete={onDelete}
         onUpdate={onUpdate}
       />
+      <FabSynchronize onSynchronize={onSynchronize} />
       <FabCreate onCreate={onCreateAccount} />
     </>
   );
