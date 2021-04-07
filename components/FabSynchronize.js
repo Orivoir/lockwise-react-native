@@ -1,7 +1,6 @@
 import React from 'react';
 import {useWindowDimensions} from 'react-native';
 import {FAB, useTheme} from 'react-native-paper';
-import {useIsFocused} from '@react-navigation/native';
 import { connect } from 'react-redux';
 import {isAvailable} from './../apis/synchronize/accounts';
 
@@ -9,7 +8,7 @@ import {
   SAFE_SSID
 } from './../constants';
 
-const FabSynchronize = ({network}) => {
+const FabSynchronize = ({network, onSynchronize}) => {
 
   const [isAvailableServerSync, setIsAvailableServerSync] = React.useState(false);
 
@@ -33,15 +32,13 @@ const FabSynchronize = ({network}) => {
   const iconName = isAvailableServerSync ? "database-sync": "sync-alert";
   const iconColor = isAvailableServerSync ? colors.accent: colors.error;
 
-  const stylesPosition = !isLandscape
-    ? {
-        right: 72,
-        bottom: 48,
-      }
-    : {
-        right: 72,
-        top: 16,
-      };
+  const stylesPosition = !isLandscape ? {
+      right: 72,
+      bottom: 48,
+    }: {
+      right: 72,
+      top: 16,
+  };
 
   return (
     <FAB
@@ -52,7 +49,7 @@ const FabSynchronize = ({network}) => {
       }}
       small={false}
       icon={iconName}
-      // onPress={onCreate}
+      onPress={onSynchronize}
     />
   );
 };

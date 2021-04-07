@@ -21,6 +21,10 @@ const Home = ({navigation, accounts}) => {
     navigation.navigate('AccountEdit', {});
   };
 
+  const onSynchronize = () => {
+    navigation.navigate('Synchronize');
+  };
+
   return (
     <>
       {/* Home screen show only favorite account */}
@@ -29,7 +33,7 @@ const Home = ({navigation, accounts}) => {
         onDelete={onDelete}
         onUpdate={onUpdate}
       />
-      <FabSynchronize />
+      <FabSynchronize onSynchronize={onSynchronize} />
       <FabCreate onCreate={onCreateAccount} />
     </>
   );
