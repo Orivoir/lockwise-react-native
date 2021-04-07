@@ -16,11 +16,24 @@ const MainStack = createNativeStackNavigator();
 const RootStack = createNativeStackNavigator();
 const SynchronizeStack = createNativeStackNavigator();
 
+const getHeaderOptions = colors => ({
+  headerRight: HeaderRight,
+  headerStyle: {
+    backgroundColor: colors.background,
+  },
+  headerTitleStyle: {
+    color: colors.text,
+  },
+});
+
 const SynchronizeRouting = () => {
+
+  const {colors} = useTheme();
 
   return (
     <SynchronizeStack.Navigator
       initialRouteName="SynchronizeAccounts"
+      screenOptions={getHeaderOptions(colors)}
     >
       {/* recheck synchronize server status before operation because HTTP connection not listen disconnect  */}
       {/* if synchronize server is available fetch and show list accounts account into synchronize server with a select list */}
@@ -36,15 +49,7 @@ const MainStackRouting = () => {
   return (
     <MainStack.Navigator
       initialRouteName="Home"
-      screenOptions={{
-        headerRight: HeaderRight,
-        headerStyle: {
-          backgroundColor: colors.background,
-        },
-        headerTitleStyle: {
-          color: colors.text,
-        },
-      }}>
+      screenOptions={getHeaderOptions(colors)}>
       <MainStack.Screen name="Home" options={{headerTitle: "Favorites"}} component={Home} />
       <MainStack.Screen name="AccountEdit" options={{headerTitle: "Edit"}} component={AccountEdit} />
       <MainStack.Screen name="StoreAccounts" options={{headerTitle: "Accounts"}} component={StoreAccounts} />
